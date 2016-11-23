@@ -16,10 +16,10 @@ public class Executer extends Application
 	//globally defined nodes and paths
 	static ArrayList<Node> nodes;
 	static ArrayList<Path> paths;
-	
+
 	//default screensizes
 	final int defaultWidth = 800;
-	final int defaultHeigth = 800;
+	final int defaultHeigth = 600;
 
 	private static ArrayList<Node> nodeReader(Scanner inputScanner)
 	{
