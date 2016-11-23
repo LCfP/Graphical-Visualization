@@ -1,0 +1,58 @@
+
+public class Edge
+{
+	private Node Node1;
+	private Node Node2;
+
+	//if direction is true, than the edge has direction from Node 1 to Node 2
+	private boolean direction;
+
+	//class constructor
+	public Edge(Node node1, Node node2, boolean dir)
+	{
+		Node1 = new Node(node1);
+		Node2 = new Node(node2);
+		direction = dir;
+	}
+
+	//deep copy class constructor
+	public Edge(Edge edge)
+	{
+		Node1 = new Node(edge.getNode1());
+		Node2 = new Node(edge.getNode2());
+		direction = edge.getDirection();
+	}
+
+	//equals method
+	public boolean equals(Edge edge)
+	{
+		if(edge.getNode1().equals(Node1) & edge.getNode2().equals(Node2) & edge.getDirection()==direction)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	//toString method
+	public String toString()
+	{
+		return("Node 1: "+Node1.toString()+", Node 2: "+Node2.toString()+", Direction: "+String.valueOf(direction));
+	}
+
+	//return elements
+	public Node getNode1(){
+		return Node1;
+	}
+
+	public Node getNode2(){
+		return Node2;
+	}
+
+	public boolean getDirection()
+	{
+		return direction;
+	}
+}
