@@ -1,7 +1,9 @@
+package model;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
+
 import javafx.application.Application;
 import javafx.scene.Group;
 import javafx.scene.Scene;
