@@ -11,8 +11,8 @@ public class Edge
 	//class constructor
 	public Edge(Node node1, Node node2, boolean dir)
 	{
-		Node1 = new Node(node1);
-		Node2 = new Node(node2);
+		Node1 = node1;
+		Node2 = node2;
 		direction = dir;
 	}
 
