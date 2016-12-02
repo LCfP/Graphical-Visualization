@@ -4,77 +4,103 @@ import model.Executer;
 
 public class Coordinates {
 
-	//Transforms the x-coordinates of the nodes to x-coordinates on the screen
-	public static double[] transformXCoordinates(double[] coordinates)
+	//Transforms the coordinates of the nodes to coordinates on the screen preserving the aspect ratio
+	public static double[][] transformCoordinates(double[] xcoordinates,double[]ycoordinates)
 	{
-		double min;
-		double max;
-		int length = coordinates.length;
-		double[] newCoordinates = new double[length];
+		double xmin = Minimum(xcoordinates);
+		double xmax = Maximum(xcoordinates);
+		double ymin = Minimum(ycoordinates);
+		double ymax = Maximum(ycoordinates);
 
-		min = max = coordinates[0];
+		System.out.println(xmin);
+		System.out.println(ymin);
+		System.out.println(xmax);
+		System.out.println(ymax);
 
-		if(length>0)
+		int width = Executer.defaultWidth;
+		int height = Executer.defaultHeight;
+		double aspectratio;
+		double margin;
+
+		int length = xcoordinates.length;
+
+		double[][] newCoordinates = new double[2][length];
+
+		if((xmax-xmin)/width - (ymax-ymin)/height > 0)
 		{
-			for(int i=1;i<length;i++)
-			{
-				if(coordinates[i]<min)
-				{
-					min=coordinates[i];
-				}
-
-				if(coordinates[i]>max)
-				{
-					max=coordinates[i];
-				}
-			}
-
-			for(int i=0;i<length;i++)
-			{
-				newCoordinates[i] = 0.05*Executer.defaultWidth + 0.9*Executer.defaultWidth*(coordinates[i]-min)/(max-min);
-			}
+			aspectratio = width/(xmax-xmin);
+			margin = width;
 		}
-		else{
-			newCoordinates[0] = 0;
+		else
+		{
+			aspectratio = height/(ymax-ymin);
+			margin = height;
 		}
+
+		System.out.println(aspectratio);
+
+		newCoordinates[0] = adjustCoordinates(xcoordinates,xmin,margin,aspectratio,true);
+		newCoordinates[1] = adjustCoordinates(ycoordinates,ymin,margin,aspectratio,false);
 
 		return(newCoordinates);
 	}
 
-	//Transforms the y-coordinates of the nodes to y-coordinates on the screen
-	public static double[] transformYCoordinates(double[] coordinates)
+	//adjusts the coordinates such that they can be drawn on the canvas
+	private static double[] adjustCoordinates(double[] coordinates,double min,double margin,double aspectratio,boolean x)
 	{
-		double min;
-		double max;
 		int length = coordinates.length;
 		double[] newCoordinates = new double[length];
 
-		min = max = coordinates[0];
-
-		if(length>0)
+		if(x)
 		{
-			for(int i=1;i<length;i++)
-			{
-				if(coordinates[i]<min)
-				{
-					min=coordinates[i];
-				}
-
-				if(coordinates[i]>max)
-				{
-					max=coordinates[i];
-				}
-			}
-
 			for(int i=0;i<length;i++)
 			{
-				newCoordinates[i] = 0.95*Executer.defaultHeigth - 0.9*Executer.defaultHeigth*(coordinates[i]-min)/(max-min);
+				newCoordinates[i] = 0.05*margin + 0.9*(coordinates[i]-min)*aspectratio;
 			}
 		}
-		else{
-			newCoordinates[0] = 0;
+		else
+		{
+			for(int i=0;i<length;i++)
+			{
+				newCoordinates[i] = 0.95*margin - 0.9*(coordinates[i]-min)*aspectratio;
+			}
 		}
 
-		return(newCoordinates);
+		return newCoordinates;
+
+	}
+
+	//Calculates the minimum of an array
+	private static double Minimum(double[] array)
+	{
+		double min = array[0];
+		int arraylength = array.length;
+
+		for(int i=0;i<arraylength;i++)
+		{
+			if(array[i]<min)
+			{
+				min = array[i];
+			}
+		}
+
+		return min;
+	}
+
+	//Calculates the maximum of an array
+	private static double Maximum(double[] array)
+	{
+		double max = array[0];
+		int arraylength = array.length;
+
+		for(int i=0;i<arraylength;i++)
+		{
+			if(array[i]>max)
+			{
+				max = array[i];
+			}
+		}
+
+		return max;
 	}
 }

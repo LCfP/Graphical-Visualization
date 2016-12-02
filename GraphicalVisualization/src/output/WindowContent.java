@@ -23,24 +23,22 @@ public class WindowContent
 		int NoNodes = nodes.size();
         double[] xcoordinates = new double[NoNodes];
         double[] ycoordinates = new double[NoNodes];
-        double[] adjustedxcoordinates = new double[NoNodes];
-        double[] adjustedycoordinates = new double[NoNodes];
+        double[][] adjustedcoordinates;
 
         for(int i=0;i<NoNodes;i++){
         	xcoordinates[i] = nodes.get(i).getXcoordinate();
         	ycoordinates[i] = nodes.get(i).getYcoordinate();
         }
 
-        adjustedxcoordinates = Coordinates.transformXCoordinates(xcoordinates);
-        adjustedycoordinates = Coordinates.transformYCoordinates(ycoordinates);
+        adjustedcoordinates = Coordinates.transformCoordinates(xcoordinates,ycoordinates);
 
 		GC.setFill(Color.GREEN);
         GC.setStroke(Color.RED);
         GC.setLineWidth(3);
 
         for(int i=0;i<NoNodes;i++){
-        	GC.strokeOval(adjustedxcoordinates[i],adjustedycoordinates[i], 10, 10);
-        	GC.fillText(String.valueOf(i+1),adjustedxcoordinates[i],adjustedycoordinates[i]+25);
+        	GC.strokeOval(adjustedcoordinates[0][i],adjustedcoordinates[1][i], 10, 10);
+        	GC.fillText(String.valueOf(i+1),adjustedcoordinates[0][i],adjustedcoordinates[1][i]+25);
         }
 	}
 
@@ -58,8 +56,7 @@ public class WindowContent
 		int NoEdges = TempEdges.size();
 		double[] xcoordinates = new double[2*NoEdges];
         double[] ycoordinates = new double[2*NoEdges];
-        double[] adjustedxcoordinates = new double[2*NoEdges];
-        double[] adjustedycoordinates = new double[2*NoEdges];
+        double[][] adjustedcoordinates = new double[2][2*NoEdges];
 
         for(int i=0;i<NoEdges;i++)
         {
@@ -69,8 +66,7 @@ public class WindowContent
         	ycoordinates[2*i+1]=TempEdges.get(i).getNode2().getYcoordinate();
         }
 
-        adjustedxcoordinates = Coordinates.transformXCoordinates(xcoordinates);
-        adjustedycoordinates = Coordinates.transformYCoordinates(ycoordinates);
+        adjustedcoordinates = Coordinates.transformCoordinates(xcoordinates,ycoordinates);
 
         GC.setFill(Color.GREEN);
         GC.setStroke(Color.BLUE);
@@ -78,13 +74,8 @@ public class WindowContent
 
         for(int i=0;i<NoEdges;i++)
         {
-        	GC.strokeLine(adjustedxcoordinates[2*i]+5,adjustedycoordinates[2*i]+5,adjustedxcoordinates[2*i+1]+5,adjustedycoordinates[2*i+1]+5);
+        	GC.strokeLine(adjustedcoordinates[0][2*i]+5,adjustedcoordinates[1][2*i]+5,adjustedcoordinates[0][2*i+1]+5,adjustedcoordinates[1][2*i+1]+5);
         }
 	}
-
-
-
-
-
 
 }

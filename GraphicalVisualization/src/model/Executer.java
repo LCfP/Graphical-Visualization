@@ -24,7 +24,7 @@ public class Executer extends Application
 
 	//default screensizes
 	public static int defaultWidth = 800;
-	public static int defaultHeigth = 600;
+	public static int defaultHeight = 600;
 
 	public static void main(String[] args)
 	{
@@ -67,7 +67,7 @@ public class Executer extends Application
 	public void start(Stage stage) throws Exception {
 		stage.setTitle("Nodes and paths");
 		Group root = new Group();
-	    Canvas canvas = new Canvas(defaultWidth,defaultHeigth);
+	    Canvas canvas = new Canvas(defaultWidth,defaultHeight);
 	    GraphicsContext gc = canvas.getGraphicsContext2D();
 	    WindowContent.drawNodes(gc,nodes);
 	    WindowContent.drawPaths(gc,paths);
