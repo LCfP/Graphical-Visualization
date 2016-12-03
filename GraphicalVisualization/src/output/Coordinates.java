@@ -12,14 +12,9 @@ public class Coordinates {
 		double ymin = Minimum(ycoordinates);
 		double ymax = Maximum(ycoordinates);
 
-		System.out.println(xmin);
-		System.out.println(ymin);
-		System.out.println(xmax);
-		System.out.println(ymax);
-
-		int width = Executer.defaultWidth;
-		int height = Executer.defaultHeight;
-		double aspectratio;
+		double width = Executer.defaultWidth;
+		double height = Executer.defaultHeight;
+		double unitlength;
 		double margin;
 
 		int length = xcoordinates.length;
@@ -28,25 +23,23 @@ public class Coordinates {
 
 		if((xmax-xmin)/width - (ymax-ymin)/height > 0)
 		{
-			aspectratio = width/(xmax-xmin);
-			margin = width;
+			unitlength = 0.9*width/(xmax-xmin);
+			margin = 0.05*width;
 		}
 		else
 		{
-			aspectratio = height/(ymax-ymin);
-			margin = height;
+			unitlength = 0.9*height/(ymax-ymin);
+			margin = 0.05*height;
 		}
 
-		System.out.println(aspectratio);
-
-		newCoordinates[0] = adjustCoordinates(xcoordinates,xmin,margin,aspectratio,true);
-		newCoordinates[1] = adjustCoordinates(ycoordinates,ymin,margin,aspectratio,false);
+		newCoordinates[0] = adjustCoordinates(xcoordinates,xmin,margin,unitlength,true);
+		newCoordinates[1] = adjustCoordinates(ycoordinates,ymax,margin,unitlength,false);
 
 		return(newCoordinates);
 	}
 
 	//adjusts the coordinates such that they can be drawn on the canvas
-	private static double[] adjustCoordinates(double[] coordinates,double min,double margin,double aspectratio,boolean x)
+	private static double[] adjustCoordinates(double[] coordinates,double ref,double margin,double aspectratio,boolean x)
 	{
 		int length = coordinates.length;
 		double[] newCoordinates = new double[length];
@@ -55,14 +48,14 @@ public class Coordinates {
 		{
 			for(int i=0;i<length;i++)
 			{
-				newCoordinates[i] = 0.05*margin + 0.9*(coordinates[i]-min)*aspectratio;
+				newCoordinates[i] = margin + (coordinates[i]-ref)*aspectratio;
 			}
 		}
 		else
 		{
 			for(int i=0;i<length;i++)
 			{
-				newCoordinates[i] = 0.95*margin - 0.9*(coordinates[i]-min)*aspectratio;
+				newCoordinates[i] = margin + (ref-coordinates[i])*aspectratio;
 			}
 		}
 

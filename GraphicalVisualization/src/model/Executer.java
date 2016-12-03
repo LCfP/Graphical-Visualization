@@ -1,5 +1,6 @@
 package model;
 import input.Input;
+import output.Resize;
 import output.WindowContent;
 
 import java.io.FileInputStream;
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -19,12 +21,12 @@ public class Executer extends Application
 {
 
 	//globally defined nodes and paths
-	private static ArrayList<Node> nodes;
-	private static ArrayList<Path> paths;
+	public static ArrayList<Node> nodes;
+	public static ArrayList<Path> paths;
 
 	//default screensizes
-	public static int defaultWidth = 800;
-	public static int defaultHeight = 600;
+	public static double defaultWidth = 800;
+	public static double defaultHeight = 600;
 
 	public static void main(String[] args)
 	{
@@ -67,14 +69,19 @@ public class Executer extends Application
 	public void start(Stage stage) throws Exception {
 		stage.setTitle("Nodes and paths");
 		Group root = new Group();
-	    Canvas canvas = new Canvas(defaultWidth,defaultHeight);
+		Scene scene = new Scene(root,defaultWidth,defaultHeight);
+		stage.setScene(scene);
+		Canvas canvas = new Canvas(defaultWidth,defaultHeight);
+		root.getChildren().add(canvas);
 	    GraphicsContext gc = canvas.getGraphicsContext2D();
+	    
+	    scene.heightProperty().addListener(Resize.getListener(scene,gc));
+	    scene.widthProperty().addListener(Resize.getListener(scene,gc));
+	    
 	    WindowContent.drawNodes(gc,nodes);
 	    WindowContent.drawPaths(gc,paths);
-	    root.getChildren().add(canvas);
-	    stage.setScene(new Scene(root));
-		stage.show();
-
+	    
+	    stage.show();
 	}
 
 }
