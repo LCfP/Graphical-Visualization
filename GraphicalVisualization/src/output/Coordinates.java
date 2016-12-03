@@ -1,23 +1,26 @@
 package output;
 
+import java.util.ArrayList;
+
 import model.Executer;
+import model.Node;
 
 public class Coordinates {
 
 	//Transforms the coordinates of the nodes to coordinates on the screen preserving the aspect ratio
-	public static double[][] transformCoordinates(double[] xcoordinates,double[]ycoordinates)
+	public static double[][] transformCoordinates(double[][] coordinates)
 	{
-		double xmin = Minimum(xcoordinates);
-		double xmax = Maximum(xcoordinates);
-		double ymin = Minimum(ycoordinates);
-		double ymax = Maximum(ycoordinates);
+		double xmin = Minimum(coordinates[0]);
+		double xmax = Maximum(coordinates[0]);
+		double ymin = Minimum(coordinates[1]);
+		double ymax = Maximum(coordinates[1]);
 
 		double width = Executer.defaultWidth;
 		double height = Executer.defaultHeight;
 		double unitlength;
 		double margin;
 
-		int length = xcoordinates.length;
+		int length = coordinates[0].length;
 
 		double[][] newCoordinates = new double[2][length];
 
@@ -32,10 +35,24 @@ public class Coordinates {
 			margin = 0.05*height;
 		}
 
-		newCoordinates[0] = adjustCoordinates(xcoordinates,xmin,margin,unitlength,true);
-		newCoordinates[1] = adjustCoordinates(ycoordinates,ymax,margin,unitlength,false);
+		newCoordinates[0] = adjustCoordinates(coordinates[0],xmin,margin,unitlength,true);
+		newCoordinates[1] = adjustCoordinates(coordinates[1],ymax,margin,unitlength,false);
 
 		return(newCoordinates);
+	}
+
+	//gets coordinates from the nodes
+	public static double[][] getCoordinates(ArrayList<Node> nodes) {
+		int length = nodes.size();
+		double[][] coordinates = new double[2][length];
+
+		for(int i=0;i<length;i++)
+        {
+        	coordinates[0][i]=nodes.get(i).getXcoordinate();
+        	coordinates[1][i]=nodes.get(i).getYcoordinate();
+        }
+
+		return coordinates;
 	}
 
 	//adjusts the coordinates such that they can be drawn on the canvas
@@ -96,4 +113,6 @@ public class Coordinates {
 
 		return max;
 	}
+
+
 }

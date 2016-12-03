@@ -9,12 +9,10 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class Executer extends Application
@@ -74,13 +72,13 @@ public class Executer extends Application
 		Canvas canvas = new Canvas(defaultWidth,defaultHeight);
 		root.getChildren().add(canvas);
 	    GraphicsContext gc = canvas.getGraphicsContext2D();
-	    
+
 	    scene.heightProperty().addListener(Resize.getListener(scene,gc));
 	    scene.widthProperty().addListener(Resize.getListener(scene,gc));
-	    
+
 	    WindowContent.drawNodes(gc,nodes);
 	    WindowContent.drawPaths(gc,paths);
-	    
+
 	    stage.show();
 	}
 

@@ -24,10 +24,36 @@ public class Edge
 		direction = edge.getDirection();
 	}
 
+	//official equals method
+	public boolean equals(Object obj)
+	{
+		if (obj==null)
+		{
+			return false;
+		}
+
+		Edge edge = (Edge) obj;
+
+		return equals(edge);
+	}
+
 	//equals method
 	public boolean equals(Edge edge)
 	{
 		if(edge.getNode1().equals(Node1) & edge.getNode2().equals(Node2) & edge.getDirection()==direction)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	//this method is a superset of equals and gives true is the same nodes are in both edges regardless of the direction
+	public boolean equivalent(Edge edge)
+	{
+		if((edge.getNode1().equals(Node1) & edge.getNode2().equals(Node2)) | (edge.getNode1().equals(Node2) & edge.getNode2().equals(Node1)))
 		{
 			return true;
 		}

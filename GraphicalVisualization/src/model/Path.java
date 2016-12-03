@@ -30,6 +30,19 @@ public class Path {
 		}
 	}
 
+	//official equals method
+	public boolean equals(Object obj)
+	{
+		if (obj==null)
+		{
+			return false;
+		}
+			
+		Path path = (Path) obj;
+			
+		return equals(path);
+	}
+	
 	//equals method
 	public boolean equals(Path path)
 	{

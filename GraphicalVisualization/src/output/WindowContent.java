@@ -3,16 +3,13 @@ package output;
 import model.Path;
 import model.Node;
 import model.Edge;
+import model.Executer;
 
 import java.util.ArrayList;
 
-import javafx.application.Application;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Color;
-import javafx.stage.Stage;
+import javafx.scene.text.Font;
 
 public class WindowContent
 {
@@ -21,6 +18,7 @@ public class WindowContent
 	public static void drawNodes(GraphicsContext GC,ArrayList<Node> nodes)
 	{
 		int NoNodes = nodes.size();
+		double nodeDiameter;
         double[] xcoordinates = new double[NoNodes];
         double[] ycoordinates = new double[NoNodes];
         double[][] adjustedcoordinates;
@@ -30,52 +28,61 @@ public class WindowContent
         	ycoordinates[i] = nodes.get(i).getYcoordinate();
         }
 
-        adjustedcoordinates = Coordinates.transformCoordinates(xcoordinates,ycoordinates);
+        adjustedcoordinates = Coordinates.transformCoordinates(Coordinates.getCoordinates(nodes));
 
 		GC.setFill(Color.GREEN);
         GC.setStroke(Color.RED);
-        GC.setLineWidth(3);
+
+        //nodes adjust in size when screensize is adjust
+        GC.setFont(new Font(Executer.defaultHeight/40));
+        GC.setLineWidth(Math.min(Executer.defaultHeight, Executer.defaultWidth)/300);
+        nodeDiameter = Math.min(Executer.defaultHeight, Executer.defaultWidth)/60;
 
         for(int i=0;i<NoNodes;i++){
-        	GC.strokeOval(adjustedcoordinates[0][i],adjustedcoordinates[1][i], 10, 10);
-        	GC.fillText(String.valueOf(i+1),adjustedcoordinates[0][i],adjustedcoordinates[1][i]+25);
+        	GC.strokeOval(adjustedcoordinates[0][i],adjustedcoordinates[1][i], nodeDiameter, nodeDiameter);
+        	GC.fillText(String.valueOf(i+1),adjustedcoordinates[0][i],adjustedcoordinates[1][i]+Executer.defaultHeight/25);
         }
 	}
 
 	//Draws all paths as blue lines
 	public static void drawPaths(GraphicsContext GC,ArrayList<Path> paths)
 	{
-		int NoPaths = paths.size();
-		ArrayList<Edge> TempEdges = new ArrayList<Edge>(0);
+		int NoOfPaths = paths.size();
+		int NoOfEdges;
 
-		for(int i=0;i<NoPaths;i++)
+		//arraylist of unique edges
+		ArrayList<Edge> edges = new ArrayList<Edge>(0);
+
+		//arraylist with the number copies of the unique edges
+		ArrayList<Integer> copiesOfEdges = new ArrayList<Integer>(0);
+
+		Path tempPath;
+		Edge tempEdge;
+
+		for(int i=0;i<NoOfPaths;i++)
 		{
-			TempEdges.addAll(paths.get(i).getEdges());
+			tempPath = paths.get(i);
+			NoOfEdges = tempPath.getEdges().size();
+
+			for(int j=0;j<NoOfEdges;j++)
+			{
+				tempEdge = tempPath.getEdges().get(j);
+
+				if(edges.contains(tempEdge))
+				{
+					copiesOfEdges.set(edges.indexOf(tempEdge),copiesOfEdges.get(edges.indexOf(tempEdge))+1);
+				}
+				else
+				{
+					copiesOfEdges.add(1);
+					edges.add(tempEdge);
+				}
+			}
 		}
 
-		int NoEdges = TempEdges.size();
-		double[] xcoordinates = new double[2*NoEdges];
-        double[] ycoordinates = new double[2*NoEdges];
-        double[][] adjustedcoordinates = new double[2][2*NoEdges];
+        Arc.drawArcs(GC, edges, copiesOfEdges);
 
-        for(int i=0;i<NoEdges;i++)
-        {
-        	xcoordinates[2*i]=TempEdges.get(i).getNode1().getXcoordinate();
-        	xcoordinates[2*i+1]=TempEdges.get(i).getNode2().getXcoordinate();
-        	ycoordinates[2*i]=TempEdges.get(i).getNode1().getYcoordinate();
-        	ycoordinates[2*i+1]=TempEdges.get(i).getNode2().getYcoordinate();
-        }
 
-        adjustedcoordinates = Coordinates.transformCoordinates(xcoordinates,ycoordinates);
-
-        GC.setFill(Color.GREEN);
-        GC.setStroke(Color.BLUE);
-        GC.setLineWidth(2);
-
-        for(int i=0;i<NoEdges;i++)
-        {
-        	GC.strokeLine(adjustedcoordinates[0][2*i]+5,adjustedcoordinates[1][2*i]+5,adjustedcoordinates[0][2*i+1]+5,adjustedcoordinates[1][2*i+1]+5);
-        }
 	}
 
 }

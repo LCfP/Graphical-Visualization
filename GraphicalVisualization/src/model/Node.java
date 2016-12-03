@@ -23,6 +23,19 @@ public class Node
 		number = node.getNumber();
 	}
 
+	//official equals method
+	public boolean equals(Object obj)
+	{
+		if (obj==null)
+		{
+			return false;
+		}
+			
+		Node node = (Node) obj;
+			
+		return equals(node);
+	}
+		
 	//Equals method
 	public boolean equals(Node node){
 		if(node.getXcoordinate()==xcoordinate & node.getYcoordinate()==ycoordinate & node.getNumber()==number)
