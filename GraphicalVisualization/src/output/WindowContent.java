@@ -13,20 +13,18 @@ import javafx.scene.text.Font;
 
 public class WindowContent
 {
+	public static void drawAll(GraphicsContext GC,ArrayList<Node> nodes,ArrayList<Path> paths)
+	{
+
+	}
+
 
 	//Draws all nodes as red circles
 	public static void drawNodes(GraphicsContext GC,ArrayList<Node> nodes)
 	{
 		int NoNodes = nodes.size();
 		double nodeDiameter;
-        double[] xcoordinates = new double[NoNodes];
-        double[] ycoordinates = new double[NoNodes];
         double[][] adjustedcoordinates;
-
-        for(int i=0;i<NoNodes;i++){
-        	xcoordinates[i] = nodes.get(i).getXcoordinate();
-        	ycoordinates[i] = nodes.get(i).getYcoordinate();
-        }
 
         adjustedcoordinates = Coordinates.transformCoordinates(Coordinates.getCoordinates(nodes));
 
@@ -49,15 +47,14 @@ public class WindowContent
 	{
 		int NoOfPaths = paths.size();
 		int NoOfEdges;
+		Path tempPath;
+		Edge tempEdge;
 
 		//arraylist of unique edges
 		ArrayList<Edge> edges = new ArrayList<Edge>(0);
 
 		//arraylist with the number copies of the unique edges
 		ArrayList<Integer> copiesOfEdges = new ArrayList<Integer>(0);
-
-		Path tempPath;
-		Edge tempEdge;
 
 		for(int i=0;i<NoOfPaths;i++)
 		{
@@ -81,8 +78,5 @@ public class WindowContent
 		}
 
         Arc.drawArcs(GC, edges, copiesOfEdges);
-
-
 	}
-
 }

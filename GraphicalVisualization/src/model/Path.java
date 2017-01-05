@@ -5,17 +5,20 @@ public class Path {
 
 	//contains an arraylist of edges
 	private ArrayList<Edge> Edges;
+	private double costs;
 
 	//creates an empty path
 	public Path()
 	{
 		Edges = new ArrayList<Edge>(0);
+		costs = 0;
 	}
 
 	//creates a non-empty path
-	public Path(ArrayList<Edge> edges)
+	public Path(ArrayList<Edge> edges, double cost)
 	{
 		Edges = edges;
+		costs =  cost;
 	}
 
 	//deep copy class constructor
@@ -37,12 +40,12 @@ public class Path {
 		{
 			return false;
 		}
-			
+
 		Path path = (Path) obj;
-			
+
 		return equals(path);
 	}
-	
+
 	//equals method
 	public boolean equals(Path path)
 	{

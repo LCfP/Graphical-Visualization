@@ -15,19 +15,21 @@ public class Arc
 	public static void drawArcs(GraphicsContext gc, ArrayList<Edge> edges, ArrayList<Integer> copies)
 	{
 		int NoOfEdges = edges.size();
-		double[][] coordinates = new double[2][2*NoOfEdges];
+		double[][] node1coordinates = new double[2][NoOfEdges];
+		double[][] node2coordinates = new double[2][NoOfEdges];
 
 		for(int i=0;i<NoOfEdges;i++)
         {
-        	coordinates[0][2*i]=edges.get(i).getNode1().getXcoordinate();
-        	coordinates[0][2*i+1]=edges.get(i).getNode2().getXcoordinate();
-        	coordinates[1][2*i]=edges.get(i).getNode1().getYcoordinate();
-        	coordinates[1][2*i+1]=edges.get(i).getNode2().getYcoordinate();
+        	node1coordinates[0][i] = edges.get(i).getNode1().getXcoordinate();
+        	node2coordinates[0][i] = edges.get(i).getNode2().getXcoordinate();
+        	node1coordinates[1][i] = edges.get(i).getNode1().getYcoordinate();
+        	node2coordinates[1][i] = edges.get(i).getNode2().getYcoordinate();
         }
 
-        double[][] adjustedcoordinates = Coordinates.transformCoordinates(coordinates);
-
 		//adjusted coordinates of the nodes
+        double[][] adjustednode1coordinates = Coordinates.transformCoordinates(node1coordinates);
+        double[][] adjustednode2coordinates = Coordinates.transformCoordinates(node2coordinates);
+
         double tempx1;
         double tempy1;
         double tempx2;
@@ -35,11 +37,37 @@ public class Arc
 
         for(int i=0;i<NoOfEdges;i++)
         {
-        	tempx1 = adjustedcoordinates[0][2*i];
-        	tempy1 = adjustedcoordinates[1][2*i];
-        	tempx2 = adjustedcoordinates[0][2*i+1];
-        	tempy2 = adjustedcoordinates[1][2*i+1];
+        	tempx1 = adjustednode1coordinates[0][i];
+        	tempy1 = adjustednode1coordinates[1][i];
+        	tempx2 = adjustednode2coordinates[0][i];
+        	tempy2 = adjustednode2coordinates[1][i];
 
+        	if(tempy1 >= tempy2)
+        	{
+        		if(tempx1 <= tempx2)
+        		{
+        			drawCircleArcs(gc,tempx1,tempx2,tempy1,tempy2,copies.get(i),0);
+        		}
+        		else//tempy1 >= tempy2 and tempx1 > tempx2
+        		{
+        			drawCircleArcs(gc,tempx1,tempx2,tempy1,tempy2,copies.get(i),1);
+        		}
+        	}
+        	else
+        	{
+            	if(tempy1 < tempy2)
+            	{
+            		if(tempx1 > tempx2)
+            		{
+            			drawCircleArcs(gc,tempx1,tempx2,tempy1,tempy2,copies.get(i),2);
+            		}
+            		else//tempy1 < tempy2 and tempx1 <= tempx2
+            		{
+            			drawCircleArcs(gc,tempx1,tempx2,tempy1,tempy2,copies.get(i),3);
+            		}
+            	}
+        	}
+/*
         	if(tempx1 > tempx2)
         	{
         		if(tempy1 > tempy2)
@@ -90,235 +118,94 @@ public class Arc
         			}
         		}
         	}
+        	*/
         }
 	}
 
-	private static void draw(GraphicsContext gc,double x1,double x2,double y1,double y2,int copies,int mode)
+	private static void drawCircleArcs(GraphicsContext gc,double x1,double x2,double y1,double y2,int copies,int mode)
 	{
 		//parameters of the circle arc
+		double nodemiddle = Math.min(Executer.defaultHeight,Executer.defaultWidth)/120;
+		double angleCircleArc = 30 / copies;
+		double nodesDistance = Math.sqrt(Math.pow(x2-x1,2)+Math.pow(y2-y1,2));
 		double circleRadius;
-		double circleAngle;
 		double circleX;
 		double circleY;
+		double angleHorAxis_Radius;
 
-		//Additional angles needed
-		double alpha;
-		double beta;
-		
+		//arrow parameters
 		double[]arrowX = new double[3];
 		double[]arrowY = new double[3];
 		double arrowwidth = Math.min(Executer.defaultHeight,Executer.defaultWidth)/120;
-		double nodemiddle = Math.min(Executer.defaultHeight,Executer.defaultWidth)/120;
+
+
 
 		gc.setFill(Color.BLUE);
         gc.setStroke(Color.BLUE);
         gc.setLineWidth(Math.min(Executer.defaultHeight, Executer.defaultWidth)/400);
 
-		switch(mode){
-		case 0:
+		for(int i=1;i<=copies;i++)
 		{
-			alpha = Math.toDegrees(Math.atan((y1 - y2) / (x1 - x2)));
+			angleCircleArc = angleCircleArc * i;
+			circleRadius = 0.5 * nodesDistance / Math.cos(Math.toRadians(90-angleCircleArc));
 
-			for(int j=0;j<copies;j++){
-				beta = j*(90-alpha)/(copies);
-    		    circleAngle = 180 - 2*alpha - 2*beta;
-    		    circleRadius = (y2 - y1)/(Math.sin(Math.toRadians(beta))-Math.sin(Math.toRadians(beta+circleAngle)));
-    		    circleX = x1 + circleRadius*(-Math.cos(Math.toRadians(beta)) - 1) ;
-    		    circleY = y1 + circleRadius*(Math.sin(Math.toRadians(beta)) - 1);
+			switch(mode){
+			case 0:
+			{
+				if(x2==x1)
+				{
+					angleHorAxis_Radius = 180 - angleCircleArc;
+				}
+				else
+				{
+					angleHorAxis_Radius = 90 - angleCircleArc + Math.toDegrees(Math.atan((y1-y2)/(x2-x1)));
+				}
+				break;
+			}
+			case 1:
+			{
+				angleHorAxis_Radius = 270 - angleCircleArc + Math.toDegrees(Math.atan((y1-y2)/(x2-x1)));
+				break;
+			}
+			case 2:
+			{
+				angleHorAxis_Radius = 270 - angleCircleArc + Math.toDegrees(Math.atan((y1-y2)/(x2-x1)));
+				break;
+			}
+			case 3:
+			{
+				if(x2==x1)
+				{
+					angleHorAxis_Radius = - angleCircleArc;
+				}
+				else
+				{
+					angleHorAxis_Radius = 90 - angleCircleArc + Math.toDegrees(Math.atan((y1-y2)/(x2-x1)));
+				}
+				break;
+			}
+			default:
+			{
+				angleHorAxis_Radius = 0;
+				System.out.println("Warning(Arc): default case reached");
+			}
+			}
 
-    		    gc.strokeArc(circleX+nodemiddle, circleY+nodemiddle, 2*circleRadius, 2*circleRadius,beta, circleAngle,ArcType.OPEN);
-    		    
-    		    arrowX[0] = circleX+nodemiddle+circleRadius*(1+Math.cos(Math.toRadians(0.7*circleAngle+beta)));
-    		    arrowY[0] = circleY+nodemiddle+circleRadius*(1-Math.sin(Math.toRadians(0.7*circleAngle+beta)));
-    		    arrowX[1] = circleX+nodemiddle+circleRadius+(circleRadius+arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+beta));
-    		    arrowY[1] = circleY+nodemiddle+circleRadius-(circleRadius+arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+beta));
-    		    arrowX[2] = circleX+nodemiddle+circleRadius+(circleRadius-arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+beta));
-    		    arrowY[2] = circleY+nodemiddle+circleRadius-(circleRadius-arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+beta));
-    		        		    
-    		    gc.fillPolygon(arrowX,arrowY,3);
-    	    }
+			circleX = x1 + circleRadius * (Math.cos(Math.toRadians(angleHorAxis_Radius)) - 1);
+			circleY = y1 + circleRadius * (-Math.sin(Math.toRadians(angleHorAxis_Radius)) - 1);
 
-			break;
-		}
-		case 1:
-		{
-			alpha = Math.toDegrees(Math.atan((x1 - x2) / (y1 - y2)));
+			gc.strokeArc(circleX+nodemiddle, circleY+nodemiddle, 2*circleRadius, 2*circleRadius,angleHorAxis_Radius-180,2*angleCircleArc,ArcType.OPEN);
 
-			for(int j=0;j<copies;j++){
-				beta = j*(90-alpha)/(copies);
-    		    circleAngle = 180 - 2*alpha - 2*beta;
-    		    circleRadius = (y1 - y2)/(Math.sin(Math.toRadians(90-beta))-Math.sin(Math.toRadians(90-beta-circleAngle)));
-    		    circleX = x2 + circleRadius*(-Math.sin(Math.toRadians(beta)) - 1) ;
-    		    circleY = y2 + circleRadius*(Math.cos(Math.toRadians(beta)) - 1);
+		    arrowX[0] = circleX+nodemiddle+circleRadius*(1+Math.cos(Math.toRadians(angleHorAxis_Radius-180+0.7*2*angleCircleArc)));
+		    arrowY[0] = circleY+nodemiddle+circleRadius*(1-Math.sin(Math.toRadians(angleHorAxis_Radius-180+0.7*2*angleCircleArc)));
+		    arrowX[1] = circleX+nodemiddle+circleRadius+(circleRadius+arrowwidth)*Math.cos(Math.toRadians(angleHorAxis_Radius-180+0.67*2*angleCircleArc));
+		    arrowY[1] = circleY+nodemiddle+circleRadius-(circleRadius+arrowwidth)*Math.sin(Math.toRadians(angleHorAxis_Radius-180+0.67*2*angleCircleArc));
+		    arrowX[2] = circleX+nodemiddle+circleRadius+(circleRadius-arrowwidth)*Math.cos(Math.toRadians(angleHorAxis_Radius-180+0.67*2*angleCircleArc));
+		    arrowY[2] = circleY+nodemiddle+circleRadius-(circleRadius-arrowwidth)*Math.sin(Math.toRadians(angleHorAxis_Radius-180+0.67*2*angleCircleArc));
 
-    		    gc.strokeArc(circleX+nodemiddle, circleY+nodemiddle, 2*circleRadius, 2*circleRadius,90-beta-circleAngle, circleAngle,ArcType.OPEN);
-    		    
-    		    arrowX[0] = circleX+nodemiddle+circleRadius*(1+Math.cos(Math.toRadians(0.7*circleAngle+90-beta-circleAngle)));
-    		    arrowY[0] = circleY+nodemiddle+circleRadius*(1-Math.sin(Math.toRadians(0.7*circleAngle+90-beta-circleAngle)));
-    		    arrowX[1] = circleX+nodemiddle+circleRadius+(circleRadius+arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+90-beta-circleAngle));
-    		    arrowY[1] = circleY+nodemiddle+circleRadius-(circleRadius+arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+90-beta-circleAngle));
-    		    arrowX[2] = circleX+nodemiddle+circleRadius+(circleRadius-arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+90-beta-circleAngle));
-    		    arrowY[2] = circleY+nodemiddle+circleRadius-(circleRadius-arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+90-beta-circleAngle));
-    		        		    
-    		    gc.fillPolygon(arrowX,arrowY,3);
-    	    }
+			gc.fillPolygon(arrowX,arrowY,3);
 
-			break;
-		}
-		case 2:
-		{
-			alpha = Math.toDegrees(Math.atan((y2 - y1) / (x1 - x2)));
-
-			for(int j=0;j<copies;j++){
-				beta = j*(90-alpha)/(copies);
-    		    circleAngle = 180 - 2*alpha - 2*beta;
-    		    circleRadius = (y2 - y1)/(Math.sin(Math.toRadians(180-beta-circleAngle))-Math.sin(Math.toRadians(180-beta)));
-    		    circleX = x2 + circleRadius*(Math.cos(Math.toRadians(beta)) - 1) ;
-    		    circleY = y2 + circleRadius*(Math.sin(Math.toRadians(beta)) - 1);
-
-    		    gc.strokeArc(circleX+nodemiddle, circleY+nodemiddle, 2*circleRadius, 2*circleRadius,180-beta-circleAngle, circleAngle,ArcType.OPEN);
-    		    
-    		    arrowX[0] = circleX+nodemiddle+circleRadius*(1+Math.cos(Math.toRadians(0.7*circleAngle+180-beta-circleAngle)));
-    		    arrowY[0] = circleY+nodemiddle+circleRadius*(1-Math.sin(Math.toRadians(0.7*circleAngle+180-beta-circleAngle)));
-    		    arrowX[1] = circleX+nodemiddle+circleRadius+(circleRadius+arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+180-beta-circleAngle));
-    		    arrowY[1] = circleY+nodemiddle+circleRadius-(circleRadius+arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+180-beta-circleAngle));
-    		    arrowX[2] = circleX+nodemiddle+circleRadius+(circleRadius-arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+180-beta-circleAngle));
-    		    arrowY[2] = circleY+nodemiddle+circleRadius-(circleRadius-arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+180-beta-circleAngle));
-    		        		    
-    		    gc.fillPolygon(arrowX,arrowY,3);
-    	    }
-
-			break;
-		}
-		case 3:
-		{
-			alpha = Math.toDegrees(Math.atan((x1 - x2) / (y2 - y1)));
-
-			for(int j=0;j<copies;j++){
-				beta = j*(90-alpha)/(copies);
-    		    circleAngle = 180 - 2*alpha - 2*beta;
-    		    circleRadius = (y1 - y2)/(Math.sin(Math.toRadians(90+beta+circleAngle))-Math.sin(Math.toRadians(90+beta)));
-    		    circleX = x1 + circleRadius*(Math.sin(Math.toRadians(beta)) - 1) ;
-    		    circleY = y1 + circleRadius*(Math.cos(Math.toRadians(beta)) - 1);
-
-    		    gc.strokeArc(circleX+nodemiddle, circleY+nodemiddle, 2*circleRadius, 2*circleRadius,90+beta, circleAngle,ArcType.OPEN);
-    		    
-    		    arrowX[0] = circleX+nodemiddle+circleRadius*(1+Math.cos(Math.toRadians(0.7*circleAngle+90+beta)));
-    		    arrowY[0] = circleY+nodemiddle+circleRadius*(1-Math.sin(Math.toRadians(0.7*circleAngle+90+beta)));
-    		    arrowX[1] = circleX+nodemiddle+circleRadius+(circleRadius+arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+90+beta));
-    		    arrowY[1] = circleY+nodemiddle+circleRadius-(circleRadius+arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+90+beta));
-    		    arrowX[2] = circleX+nodemiddle+circleRadius+(circleRadius-arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+90+beta));
-    		    arrowY[2] = circleY+nodemiddle+circleRadius-(circleRadius-arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+90+beta));
-    		        		    
-    		    gc.fillPolygon(arrowX,arrowY,3);
-    	    }
-
-			break;
-		}
-		case 4:
-		{
-			alpha = Math.toDegrees(Math.atan((y1 - y2) / (x2 - x1)));
-
-			for(int j=0;j<copies;j++){
-				beta = j*(90-alpha)/(copies);
-    		    circleAngle = 180 - 2*alpha - 2*beta;
-    		    circleRadius = (y2 - y1)/(Math.sin(Math.toRadians(-beta-circleAngle))-Math.sin(Math.toRadians(-beta)));
-    		    circleX = x2 + circleRadius*(- Math.cos(Math.toRadians(beta)) - 1) ;
-    		    circleY = y2 + circleRadius*(- Math.sin(Math.toRadians(beta)) - 1);
-
-    		    gc.strokeArc(circleX+nodemiddle, circleY+nodemiddle, 2*circleRadius, 2*circleRadius,360-beta-circleAngle, circleAngle,ArcType.OPEN);
-    		    
-    		    arrowX[0] = circleX+nodemiddle+circleRadius*(1+Math.cos(Math.toRadians(0.7*circleAngle+360-beta-circleAngle)));
-    		    arrowY[0] = circleY+nodemiddle+circleRadius*(1-Math.sin(Math.toRadians(0.7*circleAngle+360-beta-circleAngle)));
-    		    arrowX[1] = circleX+nodemiddle+circleRadius+(circleRadius+arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+360-beta-circleAngle));
-    		    arrowY[1] = circleY+nodemiddle+circleRadius-(circleRadius+arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+360-beta-circleAngle));
-    		    arrowX[2] = circleX+nodemiddle+circleRadius+(circleRadius-arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+360-beta-circleAngle));
-    		    arrowY[2] = circleY+nodemiddle+circleRadius-(circleRadius-arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+360-beta-circleAngle));
-    		        		    
-    		    gc.fillPolygon(arrowX,arrowY,3);
-    	    }
-
-			break;
-		}
-		case 5:
-		{
-			alpha = Math.toDegrees(Math.atan((x2 - x1) / (y1 - y2)));
-
-			for(int j=0;j<copies;j++){
-				beta = j*(90-alpha)/(copies);
-    		    circleAngle = 180 - 2*alpha - 2*beta;
-    		    circleRadius = (y1 - y2)/(Math.sin(Math.toRadians(270+beta+circleAngle))-Math.sin(Math.toRadians(270+beta)));
-    		    circleX = x1 + circleRadius*(-Math.sin(Math.toRadians(beta)) - 1) ;
-    		    circleY = y1 + circleRadius*(-Math.cos(Math.toRadians(beta)) - 1);
-
-    		    gc.strokeArc(circleX+nodemiddle, circleY+nodemiddle, 2*circleRadius, 2*circleRadius,270+beta, circleAngle,ArcType.OPEN);
-    		    
-    		    arrowX[0] = circleX+nodemiddle+circleRadius*(1+Math.cos(Math.toRadians(0.7*circleAngle+270+beta)));
-    		    arrowY[0] = circleY+nodemiddle+circleRadius*(1-Math.sin(Math.toRadians(0.7*circleAngle+270+beta)));
-    		    arrowX[1] = circleX+nodemiddle+circleRadius+(circleRadius+arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+270+beta));
-    		    arrowY[1] = circleY+nodemiddle+circleRadius-(circleRadius+arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+270+beta));
-    		    arrowX[2] = circleX+nodemiddle+circleRadius+(circleRadius-arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+270+beta));
-    		    arrowY[2] = circleY+nodemiddle+circleRadius-(circleRadius-arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+270+beta));
-    		        		    
-    		    gc.fillPolygon(arrowX,arrowY,3);
-    	    }
-
-			break;
-		}
-		case 6:
-		{
-			alpha = Math.toDegrees(Math.atan((y2 - y1) / (x2 - x1)));
-
-			for(int j=0;j<copies;j++){
-				beta = j*(90-alpha)/(copies);
-    		    circleAngle = 180 - 2*alpha - 2*beta;
-    		    circleRadius = (y2 - y1)/(Math.sin(Math.toRadians(180+beta))-Math.sin(Math.toRadians(180+beta+circleAngle)));
-    		    circleX = x1 + circleRadius*(Math.cos(Math.toRadians(beta)) - 1) ;
-    		    circleY = y1 + circleRadius*(-Math.sin(Math.toRadians(beta)) - 1);
-
-    		    gc.strokeArc(circleX+nodemiddle, circleY+nodemiddle, 2*circleRadius, 2*circleRadius,180+beta, circleAngle,ArcType.OPEN);
-    		    
-    		    arrowX[0] = circleX+nodemiddle+circleRadius*(1+Math.cos(Math.toRadians(0.7*circleAngle+180+beta)));
-    		    arrowY[0] = circleY+nodemiddle+circleRadius*(1-Math.sin(Math.toRadians(0.7*circleAngle+180+beta)));
-    		    arrowX[1] = circleX+nodemiddle+circleRadius+(circleRadius+arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+180+beta));
-    		    arrowY[1] = circleY+nodemiddle+circleRadius-(circleRadius+arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+180+beta));
-    		    arrowX[2] = circleX+nodemiddle+circleRadius+(circleRadius-arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+180+beta));
-    		    arrowY[2] = circleY+nodemiddle+circleRadius-(circleRadius-arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+180+beta));
-    		        		    
-    		    gc.fillPolygon(arrowX,arrowY,3);
-    	    }
-
-			break;
-		}
-		case 7:
-		{
-			alpha = Math.toDegrees(Math.atan((x2 - x1) / (y2 - y1)));
-
-			for(int j=0;j<copies;j++){
-				beta = j*(90-alpha)/(copies);
-    		    circleAngle = 180 - 2*alpha - 2*beta;
-    		    circleRadius = (y1 - y2)/(Math.sin(Math.toRadians(-90-beta))-Math.sin(Math.toRadians(-90-beta-circleAngle)));
-    		    circleX = x2 + circleRadius*(Math.sin(Math.toRadians(beta)) - 1) ;
-    		    circleY = y2 + circleRadius*(-Math.cos(Math.toRadians(beta)) - 1);
-
-    		    gc.strokeArc(circleX+nodemiddle, circleY+nodemiddle, 2*circleRadius, 2*circleRadius,270-beta-circleAngle, circleAngle,ArcType.OPEN);
-    		    
-    		    arrowX[0] = circleX+nodemiddle+circleRadius*(1+Math.cos(Math.toRadians(0.7*circleAngle+270-beta-circleAngle)));
-    		    arrowY[0] = circleY+nodemiddle+circleRadius*(1-Math.sin(Math.toRadians(0.7*circleAngle+270-beta-circleAngle)));
-    		    arrowX[1] = circleX+nodemiddle+circleRadius+(circleRadius+arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+270-beta-circleAngle));
-    		    arrowY[1] = circleY+nodemiddle+circleRadius-(circleRadius+arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+270-beta-circleAngle));
-    		    arrowX[2] = circleX+nodemiddle+circleRadius+(circleRadius-arrowwidth)*Math.cos(Math.toRadians(0.67*circleAngle+270-beta-circleAngle));
-    		    arrowY[2] = circleY+nodemiddle+circleRadius-(circleRadius-arrowwidth)*Math.sin(Math.toRadians(0.67*circleAngle+270-beta-circleAngle));
-    		        		    
-    		    gc.fillPolygon(arrowX,arrowY,3);   		    
-    	    }
-
-			break;
-		}
-		default:
-		{
-			System.out.println("default case reached");
-		}
 		}
 	}
+
 }
