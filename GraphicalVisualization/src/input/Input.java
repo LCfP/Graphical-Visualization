@@ -6,6 +6,7 @@ import java.util.Scanner;
 import model.Edge;
 import model.Node;
 import model.Path;
+import output.WindowContent;
 
 public class Input {
 
@@ -98,7 +99,7 @@ public class Input {
 					try
 					{
 						Pathnodes = text.split(" ");
-						pathnodeslength = Pathnodes.length;
+						pathnodeslength = Pathnodes.length-1;
 
 						if(pathnodeslength<1)
 						{
@@ -137,6 +138,9 @@ public class Input {
 							Paths.get(pathcounter-1).addEdge(edge);
 						}
 
+						Paths.get(pathcounter-1).setCosts(Double.parseDouble(Pathnodes[pathnodeslength]));
+						Paths.get(pathcounter-1).setColor(WindowContent.inventColor(pathcounter-1));
+
 						System.out.println("Path added");
 
 						pathcounter ++;
@@ -154,10 +158,6 @@ public class Input {
 			}
 		}
 
-		for(int i=0;i<Edges.size();i++){
-			System.out.println(Edges.get(i).getVirtualordering());
-			System.out.println(Edges.get(i).getTotalcopies());
-		}
 		for(int i=0;i<(pathcounter-1);i++)
 		{
 			EdgesInPath = Paths.get(i).getEdges();
@@ -167,10 +167,6 @@ public class Input {
 			{
 				tempEdge = new Edge(EdgesInPath.get(j));
 				tempEdge.setVirtualordering(0);
-
-				System.out.println(i+","+j);
-				System.out.println(tempEdge.getTotalcopies());
-
 
 				EdgesInPath.get(j).setTotalcopies(edgeCounter.get(Edges.indexOf(tempEdge)));
 			}
@@ -210,7 +206,7 @@ public class Input {
 				Outputpath = OutputEdges.get(j).getNode1().getNumber() +"-"+OutputEdges.get(j).getNode2().getNumber()+" ";
 				System.out.printf("%s",Outputpath);
 			}
-
+			System.out.printf("%s",Paths.get(i).getCosts());
 			System.out.println("");
 		}
 	}

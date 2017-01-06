@@ -84,7 +84,7 @@ public class Coordinates
 		double xmargin = (maxy - miny) * (1 - Math.cos(Math.toRadians(30)));
 		double ymargin = (maxx - minx) * (1 - Math.cos(Math.toRadians(30)));
 
-		double width = Executer.defaultWidth;
+		double width = 0.8*Executer.defaultWidth;
 		double height = Executer.defaultHeight;
 
 		for(int i=0;i<noOfNodes;i++)
@@ -110,7 +110,7 @@ public class Coordinates
 	{
 		double[][] coordinates = getVirtualCoordinates(nodes);
 		int noOfNodes = nodes.size();
-		double minimumDistance = 1.5 * Math.min(Executer.defaultHeight, Executer.defaultWidth) / 60;
+		double minimumDistance = 1.5 * Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth) / 60;
 		double newX;
 		double newY;
 

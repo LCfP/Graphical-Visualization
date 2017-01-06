@@ -9,10 +9,13 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
 public class Executer extends Application
@@ -22,6 +25,10 @@ public class Executer extends Application
 	public static ArrayList<Node> nodes;
 	public static ArrayList<Path> paths;
 
+	public static Circle[] nodecircles;
+	public static Arc[] edgearcs;
+	public static Polygon[] arrowpolygons;
+
 	//default screensizes
 	public static double defaultWidth = 800;
 	public static double defaultHeight = 600;
@@ -29,6 +36,7 @@ public class Executer extends Application
 	public static void main(String[] args)
 	{
 		Scanner inputReader = null;
+		int edgecounter = 0;
 
 		nodes = new ArrayList<Node>(0);
 		paths = new ArrayList<Path>(0);
@@ -55,6 +63,16 @@ public class Executer extends Application
 		nodes = Input.nodeReader(inputReader);
 		paths = Input.pathReader(inputReader,nodes);
 
+		nodecircles = new Circle[nodes.size()];
+
+		for(int i=0;i<paths.size();i++)
+		{
+			edgecounter += paths.get(i).getEdges().size();
+		}
+
+		edgearcs = new Arc[edgecounter];
+		arrowpolygons = new Polygon[edgecounter];
+
 		//Prints nodes and paths to the screen
 		Input.printNodes(nodes);
 		Input.printPaths(paths);
@@ -66,17 +84,22 @@ public class Executer extends Application
 	//Standard JavaFX method
 	public void start(Stage stage) throws Exception {
 		stage.setTitle("Nodes and paths");
-		Group root = new Group();
+
+	    GridPane root = new GridPane();
+
 		Scene scene = new Scene(root,defaultWidth,defaultHeight);
 		stage.setScene(scene);
-		Canvas canvas = new Canvas(defaultWidth,defaultHeight);
-		root.getChildren().add(canvas);
-	    GraphicsContext gc = canvas.getGraphicsContext2D();
 
-	    scene.heightProperty().addListener(Resize.getListener(scene,gc));
-	    scene.widthProperty().addListener(Resize.getListener(scene,gc));
+		Canvas textcanvas = new Canvas(0.2*defaultWidth,defaultHeight);
+		root.add(textcanvas,1,1);
 
-	    WindowContent.drawAll(gc,nodes,paths);
+		Pane pane = new Pane();
+		root.add(pane, 2,1);
+
+	    scene.heightProperty().addListener(Resize.getListener(scene,textcanvas,pane));
+	    scene.widthProperty().addListener(Resize.getListener(scene,textcanvas,pane));
+
+	    WindowContent.drawAll(textcanvas,pane,nodes,paths);
 
 	    stage.show();
 	}
