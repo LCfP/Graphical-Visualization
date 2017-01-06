@@ -23,8 +23,7 @@ public class Resize {
 				gc.getCanvas().setHeight(scene.getHeight());
 				gc.getCanvas().setWidth(scene.getWidth());
 
-				WindowContent.drawNodes(gc, Executer.nodes);
-				WindowContent.drawPaths(gc, Executer.paths);
+				WindowContent.drawAll(gc, Executer.nodes, Executer.paths);
 			}
 
 		};

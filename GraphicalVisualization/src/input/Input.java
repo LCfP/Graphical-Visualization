@@ -12,7 +12,7 @@ public class Input {
 	public static ArrayList<Node> nodeReader(Scanner inputScanner)
 	{
 		String text;
-		int nodecounter = 1;
+		int nodecounter = 0;
 		int nodenumber;
 		double xcoordinate;
 		double ycoordinate;
@@ -42,7 +42,15 @@ public class Input {
 							System.exit(0);
 						}
 
-						Nodes.add(new Node(xcoordinate,ycoordinate,nodenumber));
+						if(nodenumber==0)
+						{
+							Nodes.add(new Node(xcoordinate,ycoordinate,nodenumber,true));
+						}
+						else
+						{
+							Nodes.add(new Node(xcoordinate,ycoordinate,nodenumber,false));
+						}
+
 						System.out.println("Node added");
 
 						nodecounter ++;
@@ -67,6 +75,12 @@ public class Input {
 		int pathnodeslength;
 		int pathcounter=1;
 		ArrayList<Path> Paths = new ArrayList<Path>(0);
+		ArrayList<Edge> Edges = new ArrayList<Edge>(0);
+		ArrayList<Edge> EdgesInPath;
+		Edge tempEdge;
+		int noOfEdges;
+		Edge edge;
+		ArrayList<Integer> edgeCounter = new ArrayList<Integer>(0);
 
 		//read out the paths
 		if(inputScanner.hasNextLine())
@@ -101,13 +115,26 @@ public class Input {
 							pathnodes[0] = Integer.parseInt(Pathnodes[i].split("-")[0]);
 							pathnodes[1] = Integer.parseInt(Pathnodes[i].split("-")[1]);
 
-							if(pathnodes[0]<1 | pathnodes[0]>(Nodes.size()) | pathnodes[1]<1 | pathnodes[1]>(Nodes.size()))
+							if(pathnodes[0]<0 | pathnodes[0]>(Nodes.size()) | pathnodes[1]<0 | pathnodes[1]>(Nodes.size()))
 							{
 								System.out.println("Error (scanner): File not compatible");
 								System.exit(0);
 							}
 
-							Paths.get(pathcounter-1).addEdge(new Edge(Nodes.get(pathnodes[0]-1),Nodes.get(pathnodes[1]-1),true));
+							edge = new Edge(Nodes.get(pathnodes[0]),Nodes.get(pathnodes[1]),true,0);
+
+							if(Edges.contains(edge))
+							{
+								edgeCounter.set(Edges.indexOf(edge),edgeCounter.get(Edges.indexOf(edge))+1);
+								edge.setVirtualordering(edgeCounter.get(Edges.indexOf(edge)));
+							}
+							else
+							{
+								Edges.add(new Edge(edge));
+								edgeCounter.add(0);
+							}
+
+							Paths.get(pathcounter-1).addEdge(edge);
 						}
 
 						System.out.println("Path added");
@@ -127,6 +154,28 @@ public class Input {
 			}
 		}
 
+		for(int i=0;i<Edges.size();i++){
+			System.out.println(Edges.get(i).getVirtualordering());
+			System.out.println(Edges.get(i).getTotalcopies());
+		}
+		for(int i=0;i<(pathcounter-1);i++)
+		{
+			EdgesInPath = Paths.get(i).getEdges();
+			noOfEdges = EdgesInPath.size();
+
+			for(int j=0;j<noOfEdges;j++)
+			{
+				tempEdge = new Edge(EdgesInPath.get(j));
+				tempEdge.setVirtualordering(0);
+
+				System.out.println(i+","+j);
+				System.out.println(tempEdge.getTotalcopies());
+
+
+				EdgesInPath.get(j).setTotalcopies(edgeCounter.get(Edges.indexOf(tempEdge)));
+			}
+		}
+
 		return(Paths);
 	}
 
@@ -138,7 +187,8 @@ public class Input {
 
 		for(int i=0;i<(Nodes.size());i++)
 		{
-			System.out.printf("%d\t%s,%s\n",Nodes.get(i).getNumber(),Nodes.get(i).getXcoordinate(),Nodes.get(i).getYcoordinate());
+			System.out.printf("%d\t%s,%s\n",Nodes.get(i).getNumber(),Nodes.get(i).getRealXcoordinate()
+					,Nodes.get(i).getRealYcoordinate());
 		}
 	}
 
@@ -164,5 +214,4 @@ public class Input {
 			System.out.println("");
 		}
 	}
-
 }

@@ -5,79 +5,35 @@ import java.util.ArrayList;
 import model.Executer;
 import model.Node;
 
-public class Coordinates {
+public class Coordinates 
+{
 
-	//Transforms the coordinates of the nodes to coordinates on the screen preserving the aspect ratio
-	public static double[][] transformCoordinates(double[][] coordinates)
-	{
-		double xmin = Minimum(coordinates[0]);
-		double xmax = Maximum(coordinates[0]);
-		double ymin = Minimum(coordinates[1]);
-		double ymax = Maximum(coordinates[1]);
-
-		double width = Executer.defaultWidth;
-		double height = Executer.defaultHeight;
-		double unitlength;
-		double margin;
-
-		int length = coordinates[0].length;
-
-		double[][] newCoordinates = new double[2][length];
-
-		if((xmax-xmin)/width - (ymax-ymin)/height > 0)
-		{
-			unitlength = 0.9*width/(xmax-xmin);
-			margin = 0.05*width;
-		}
-		else
-		{
-			unitlength = 0.9*height/(ymax-ymin);
-			margin = 0.05*height;
-		}
-
-		newCoordinates[0] = adjustCoordinates(coordinates[0],xmin,margin,unitlength,true);
-		newCoordinates[1] = adjustCoordinates(coordinates[1],ymax,margin,unitlength,false);
-
-		return(newCoordinates);
-	}
-
-	//gets coordinates from the nodes
-	public static double[][] getCoordinates(ArrayList<Node> nodes) {
+	//gets real coordinates from the nodes
+	public static double[][] getRealCoordinates(ArrayList<Node> nodes) {
 		int length = nodes.size();
 		double[][] coordinates = new double[2][length];
 
 		for(int i=0;i<length;i++)
         {
-        	coordinates[0][i]=nodes.get(i).getXcoordinate();
-        	coordinates[1][i]=nodes.get(i).getYcoordinate();
+        	coordinates[0][i]=nodes.get(i).getRealXcoordinate();
+        	coordinates[1][i]=nodes.get(i).getRealYcoordinate();
         }
 
 		return coordinates;
 	}
 
-	//adjusts the coordinates such that they can be drawn on the canvas
-	private static double[] adjustCoordinates(double[] coordinates,double ref,double margin,double aspectratio,boolean x)
-	{
-		int length = coordinates.length;
-		double[] newCoordinates = new double[length];
+	//gets virtual coordinates from the nodes
+	public static double[][] getVirtualCoordinates(ArrayList<Node> nodes) {
+		int length = nodes.size();
+		double[][] coordinates = new double[2][length];
 
-		if(x)
-		{
-			for(int i=0;i<length;i++)
-			{
-				newCoordinates[i] = margin + (coordinates[i]-ref)*aspectratio;
-			}
-		}
-		else
-		{
-			for(int i=0;i<length;i++)
-			{
-				newCoordinates[i] = margin + (ref-coordinates[i])*aspectratio;
-			}
-		}
+		for(int i=0;i<length;i++)
+        {
+        	coordinates[0][i]=nodes.get(i).getVirtualXcoordinate();
+        	coordinates[1][i]=nodes.get(i).getVirtualYcoordinate();
+        }
 
-		return newCoordinates;
-
+		return coordinates;
 	}
 
 	//Calculates the minimum of an array
@@ -114,5 +70,66 @@ public class Coordinates {
 		return max;
 	}
 
+	//adjusts the virtual coordinates of the nodes such that they can be drawn on the canvas
+	public static void adjustVirtualCoordinates(ArrayList<Node> nodes)
+	{
+		double[][] coordinates = getRealCoordinates(nodes);
+		int noOfNodes = nodes.size();
 
+		double minx = Minimum(coordinates[0]);
+		double miny = Minimum(coordinates[1]);
+		double maxx = Maximum(coordinates[0]);
+		double maxy = Maximum(coordinates[1]);
+
+		double xmargin = (maxy - miny) * (1 - Math.cos(Math.toRadians(30)));
+		double ymargin = (maxx - minx) * (1 - Math.cos(Math.toRadians(30)));
+
+		double width = Executer.defaultWidth;
+		double height = Executer.defaultHeight;
+
+		for(int i=0;i<noOfNodes;i++)
+		{
+			//keeping the aspect ratio
+			if((maxx-minx+2*xmargin)>(maxy-miny+2*ymargin))
+			{
+				nodes.get(i).setVirtualXcoordinate(width*(-minx+xmargin+coordinates[0][i])/(maxx-minx+2*xmargin));
+				nodes.get(i).setVirtualYcoordinate(height*(maxy+ymargin-coordinates[1][i])/(maxx-minx+2*xmargin));
+			}
+			else
+			{
+				nodes.get(i).setVirtualXcoordinate(width*(-minx+xmargin+coordinates[0][i])/(maxy-miny+2*ymargin));
+				nodes.get(i).setVirtualYcoordinate(height*(maxy+ymargin-coordinates[1][i])/(maxy-miny+2*ymargin));
+			}
+		}
+
+		checkNodeOverlap(nodes);
+	}
+
+	//changes the virtual coordinates when 2 nodes overlap such that they are both visible
+	public static void checkNodeOverlap(ArrayList<Node> nodes)
+	{
+		double[][] coordinates = getVirtualCoordinates(nodes);
+		int noOfNodes = nodes.size();
+		double minimumDistance = 1.5 * Math.min(Executer.defaultHeight, Executer.defaultWidth) / 60;
+		double newX;
+		double newY;
+
+		for(int i=0;i<(noOfNodes-1);i++)
+		{
+			for(int j=i;j<noOfNodes;j++)
+			{
+				if(Math.abs(coordinates[0][i]-coordinates[0][j])<minimumDistance
+						& Math.abs(coordinates[1][i]-coordinates[1][j])<minimumDistance)
+				{
+					newX = 0.5 * (coordinates[0][i] + coordinates[0][j]);
+					newY = 0.5 * (coordinates[1][i] + coordinates[1][j]);
+
+					nodes.get(i).setVirtualXcoordinate(newX-0.5*minimumDistance);
+					nodes.get(i).setVirtualYcoordinate(newY);
+					nodes.get(j).setVirtualXcoordinate(newX+0.5*minimumDistance);
+					nodes.get(j).setVirtualYcoordinate(newY);
+				}
+			}
+		}
+	}
 }

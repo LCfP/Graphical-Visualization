@@ -3,24 +3,33 @@ package model;
 public class Node
 {
 	//Node has an x and y coordinate and a number
-	private double xcoordinate;
-	private double ycoordinate;
+	private double realxcoordinate;
+	private double realycoordinate;
+	private double virtualxcoordinate;
+	private double virtualycoordinate;
 	private int number;
+	private boolean depot;
 
 	//Main class constructor
-	public Node(double x, double y,int no)
+	public Node(double x, double y,int no,boolean dep)
 	{
-		xcoordinate = x;
-		ycoordinate = y;
+		realxcoordinate = x;
+		realycoordinate = y;
+		virtualxcoordinate = x;
+		virtualycoordinate = y;
 		number = no;
+		depot = dep;
 	}
 
 	//Deep copy constructor
 	public Node(Node node)
 	{
-		xcoordinate = node.getXcoordinate();
-		ycoordinate = node.getYcoordinate();
+		realxcoordinate = node.getRealXcoordinate();
+		realycoordinate = node.getRealYcoordinate();
+		virtualxcoordinate = node.getVirtualXcoordinate();
+		virtualycoordinate = node.getVirtualYcoordinate();
 		number = node.getNumber();
+		depot = node.isDepot();
 	}
 
 	//official equals method
@@ -30,15 +39,18 @@ public class Node
 		{
 			return false;
 		}
-			
+
 		Node node = (Node) obj;
-			
+
 		return equals(node);
 	}
-		
+
 	//Equals method
 	public boolean equals(Node node){
-		if(node.getXcoordinate()==xcoordinate & node.getYcoordinate()==ycoordinate & node.getNumber()==number)
+		if(node.getRealXcoordinate()==realxcoordinate & node.getRealYcoordinate()==realycoordinate
+				& node.getVirtualXcoordinate()==virtualxcoordinate
+				& node.getVirtualYcoordinate()==virtualycoordinate & node.getNumber()==number
+				& node.isDepot() == depot)
 		{
 			return true;
 		}
@@ -48,24 +60,46 @@ public class Node
 		}
 	}
 
-	//toString method
-		public String toString()
-		{
-			return("Number: "+String.valueOf(number)+", X-coordinate: "+String.valueOf(xcoordinate)+", Y-coordinate: "+String.valueOf(ycoordinate));
-		}
-
-	//Gives the coordinates
-	public double getXcoordinate()
+	//sets virtual coordinates
+	public void setVirtualXcoordinate(double newX)
 	{
-		return xcoordinate;
+		virtualxcoordinate = newX;
 	}
 
-	public double getYcoordinate()
+	public void setVirtualYcoordinate(double newY)
 	{
-		return ycoordinate;
+		virtualycoordinate = newY;
 	}
 
-	public int getNumber(){
+	//Gives the real coordinates
+	public double getRealXcoordinate()
+	{
+		return realxcoordinate;
+	}
+
+	public double getRealYcoordinate()
+	{
+		return realycoordinate;
+	}
+
+	//Gives the virtual coordinates
+	public double getVirtualXcoordinate()
+	{
+		return virtualxcoordinate;
+	}
+
+	public double getVirtualYcoordinate()
+	{
+		return virtualycoordinate;
+	}
+
+	public int getNumber()
+	{
 		return number;
+	}
+
+	public boolean isDepot()
+	{
+		return depot;
 	}
 }

@@ -8,12 +8,20 @@ public class Edge
 	//if direction is true, than the edge has direction from Node 1 to Node 2
 	private boolean direction;
 
+	//counts the number of preceding edges between Node 1 and Node 2
+	private int virtualordering;
+
+	//the total number of this edge that exists
+	private int totalcopies;
+
 	//class constructor
-	public Edge(Node node1, Node node2, boolean dir)
+	public Edge(Node node1, Node node2, boolean dir,int ordering)
 	{
 		Node1 = node1;
 		Node2 = node2;
 		direction = dir;
+		virtualordering = ordering;
+		totalcopies = 0;
 	}
 
 	//deep copy class constructor
@@ -22,6 +30,8 @@ public class Edge
 		Node1 = new Node(edge.getNode1());
 		Node2 = new Node(edge.getNode2());
 		direction = edge.getDirection();
+		virtualordering = edge.getVirtualordering();
+		totalcopies = edge.getTotalcopies();
 	}
 
 	//official equals method
@@ -40,7 +50,8 @@ public class Edge
 	//equals method
 	public boolean equals(Edge edge)
 	{
-		if(edge.getNode1().equals(Node1) & edge.getNode2().equals(Node2) & edge.getDirection()==direction)
+		if(edge.getNode1().equals(Node1) & edge.getNode2().equals(Node2) & edge.getDirection()==direction
+				& edge.getVirtualordering()==virtualordering & edge.getTotalcopies()==totalcopies)
 		{
 			return true;
 		}
@@ -50,23 +61,16 @@ public class Edge
 		}
 	}
 
-	//this method is a superset of equals and gives true is the same nodes are in both edges regardless of the direction
-	public boolean equivalent(Edge edge)
+	//set virtual ordering
+	public void setVirtualordering(int ordering)
 	{
-		if((edge.getNode1().equals(Node1) & edge.getNode2().equals(Node2)) | (edge.getNode1().equals(Node2) & edge.getNode2().equals(Node1)))
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		virtualordering = ordering;
 	}
 
-	//toString method
-	public String toString()
+	//set total copies
+	public void setTotalcopies(int copies)
 	{
-		return("Node 1: "+Node1.toString()+", Node 2: "+Node2.toString()+", Direction: "+String.valueOf(direction));
+		totalcopies = copies;
 	}
 
 	//return elements
@@ -81,5 +85,14 @@ public class Edge
 	public boolean getDirection()
 	{
 		return direction;
+	}
+
+	public int getVirtualordering() {
+		return virtualordering;
+	}
+
+	public int getTotalcopies()
+	{
+		return totalcopies;
 	}
 }

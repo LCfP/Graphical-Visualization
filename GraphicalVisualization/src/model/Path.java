@@ -57,30 +57,9 @@ public class Path {
 		}
 	}
 
-	//toString method
-	public String toString()
-	{
-		String output = "";
-		int edgeslength = Edges.size();
-
-		if(edgeslength>0)
-		{
-			for(int i=0;i<edgeslength;i++)
-			{
-				output.concat("edge "+String.valueOf(i+1)+": "+Edges.get(i).toString());
-			}
-		}
-		else
-		{
-			output = "null";
-		}
-
-		return(output);
-	}
-
-	//adds deep copy of an edge
+	//adds an edge
 	public void addEdge(Edge edge){
-		Edges.add(new Edge(edge));
+		Edges.add(edge);
 	}
 
 	//returns edges

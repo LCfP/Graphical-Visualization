@@ -76,8 +76,7 @@ public class Executer extends Application
 	    scene.heightProperty().addListener(Resize.getListener(scene,gc));
 	    scene.widthProperty().addListener(Resize.getListener(scene,gc));
 
-	    WindowContent.drawNodes(gc,nodes);
-	    WindowContent.drawPaths(gc,paths);
+	    WindowContent.drawAll(gc,nodes,paths);
 
 	    stage.show();
 	}

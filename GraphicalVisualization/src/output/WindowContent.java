@@ -2,7 +2,6 @@ package output;
 
 import model.Path;
 import model.Node;
-import model.Edge;
 import model.Executer;
 
 import java.util.ArrayList;
@@ -13,9 +12,19 @@ import javafx.scene.text.Font;
 
 public class WindowContent
 {
+	//Draw all elements on the canvas
 	public static void drawAll(GraphicsContext GC,ArrayList<Node> nodes,ArrayList<Path> paths)
 	{
+        Coordinates.adjustVirtualCoordinates(nodes);
 
+        drawNodes(GC,nodes);
+        int noOfPaths = paths.size();
+
+        for(int i=0;i<noOfPaths;i++)
+        {
+        	int[] color = inventColor(i);
+        	Arc.drawArcs(GC,color,paths.get(i).getEdges());
+        }
 	}
 
 
@@ -24,59 +33,42 @@ public class WindowContent
 	{
 		int NoNodes = nodes.size();
 		double nodeDiameter;
-        double[][] adjustedcoordinates;
-
-        adjustedcoordinates = Coordinates.transformCoordinates(Coordinates.getCoordinates(nodes));
+		double[][] virtualcoordinates = Coordinates.getVirtualCoordinates(nodes);
 
 		GC.setFill(Color.GREEN);
-        GC.setStroke(Color.RED);
+
 
         //nodes adjust in size when screensize is adjust
         GC.setFont(new Font(Executer.defaultHeight/40));
         GC.setLineWidth(Math.min(Executer.defaultHeight, Executer.defaultWidth)/300);
         nodeDiameter = Math.min(Executer.defaultHeight, Executer.defaultWidth)/60;
 
-        for(int i=0;i<NoNodes;i++){
-        	GC.strokeOval(adjustedcoordinates[0][i],adjustedcoordinates[1][i], nodeDiameter, nodeDiameter);
-        	GC.fillText(String.valueOf(i+1),adjustedcoordinates[0][i],adjustedcoordinates[1][i]+Executer.defaultHeight/25);
+        for(int i=0;i<NoNodes;i++)
+        {
+        	if(nodes.get(i).isDepot())
+        	{
+        		GC.setStroke(Color.rgb(180,0,255));
+        	}
+        	else
+        	{
+        		GC.setStroke(Color.RED);
+        	}
+
+        	GC.strokeOval(virtualcoordinates[0][i],virtualcoordinates[1][i], nodeDiameter, nodeDiameter);
+        	GC.fillText(String.valueOf(i),virtualcoordinates[0][i],virtualcoordinates[1][i]+Executer.defaultHeight/25);
         }
 	}
 
-	//Draws all paths as blue lines
-	public static void drawPaths(GraphicsContext GC,ArrayList<Path> paths)
+	public static int[] inventColor(int index)
 	{
-		int NoOfPaths = paths.size();
-		int NoOfEdges;
-		Path tempPath;
-		Edge tempEdge;
+		int[] basiccolors = new int[3];
 
-		//arraylist of unique edges
-		ArrayList<Edge> edges = new ArrayList<Edge>(0);
+		int sqrtindex = (int) (Math.sqrt(index+1)+1);
 
-		//arraylist with the number copies of the unique edges
-		ArrayList<Integer> copiesOfEdges = new ArrayList<Integer>(0);
+		basiccolors[0] = ((int)(0.5*index/sqrtindex))*255/sqrtindex;
+		basiccolors[1] = ((int)(index/sqrtindex))*255/sqrtindex;
+		basiccolors[2] = ((index+1)%sqrtindex)*255/(sqrtindex-1);
 
-		for(int i=0;i<NoOfPaths;i++)
-		{
-			tempPath = paths.get(i);
-			NoOfEdges = tempPath.getEdges().size();
-
-			for(int j=0;j<NoOfEdges;j++)
-			{
-				tempEdge = tempPath.getEdges().get(j);
-
-				if(edges.contains(tempEdge))
-				{
-					copiesOfEdges.set(edges.indexOf(tempEdge),copiesOfEdges.get(edges.indexOf(tempEdge))+1);
-				}
-				else
-				{
-					copiesOfEdges.add(1);
-					edges.add(tempEdge);
-				}
-			}
-		}
-
-        Arc.drawArcs(GC, edges, copiesOfEdges);
+		return basiccolors;
 	}
 }
