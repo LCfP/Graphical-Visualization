@@ -48,6 +48,7 @@ public class WindowContent
 
         	Executer.nodecircles[i].setOnMouseEntered(Mouse.MouseOnCircleEnter(gc,pane));
         	Executer.nodecircles[i].setOnMouseExited(Mouse.MouseOnCircleExit(gc,pane));
+        	Executer.nodecircles[i].setOnMouseClicked(Mouse.MouseclickOnCircle(gc, pane));
 
         	if(nodes.get(i).isDepot())
         	{

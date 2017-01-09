@@ -144,6 +144,7 @@ public class ArcDraw
 		Executer.edgearcs[count].setStrokeWidth(Math.min(Executer.defaultHeight, Executer.defaultWidth)/400);
 		Executer.edgearcs[count].setOnMouseEntered(Mouse.MouseOnEdgeEnter(gc, pane));
 		Executer.edgearcs[count].setOnMouseExited(Mouse.MouseOnEdgeExit(gc, pane));
+		Executer.edgearcs[count].setOnMouseClicked(Mouse.MouseclickOnEdge(gc, pane));
 
 		pane.getChildren().add(Executer.edgearcs[count]);
 
@@ -159,7 +160,8 @@ public class ArcDraw
 		Executer.arrowpolygons[count].setFill(Color.rgb(color[0],color[1],color[2]));
 		Executer.arrowpolygons[count].setOnMouseEntered(Mouse.MouseOnArrowEnter(gc, pane));
 		Executer.arrowpolygons[count].setOnMouseExited(Mouse.MouseOnArrowExit(gc, pane));
-
+		Executer.arrowpolygons[count].setOnMouseClicked(Mouse.MouseclickOnArrow(gc, pane));
+		
 		pane.getChildren().add(Executer.arrowpolygons[count]);
 	}
 }
