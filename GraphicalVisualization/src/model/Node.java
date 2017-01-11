@@ -1,5 +1,7 @@
 package model;
 
+import java.util.ArrayList;
+
 public class Node
 {
 	//Node has an x and y coordinate and a number
@@ -8,28 +10,48 @@ public class Node
 	private double virtualxcoordinate;
 	private double virtualycoordinate;
 	private int number;
-	private boolean depot;
+
+	//attributes of the node
+	private ArrayList<String> Attributes;
+	private ArrayList<String> AttributeNames;
 
 	//Main class constructor
-	public Node(double x, double y,int no,boolean dep)
+	public Node(double x, double y,int no)
 	{
 		realxcoordinate = x;
 		realycoordinate = y;
 		virtualxcoordinate = x;
 		virtualycoordinate = y;
 		number = no;
-		depot = dep;
+		Attributes = new ArrayList<String>(0);
+		AttributeNames = new ArrayList<String>(0);
 	}
 
 	//Deep copy constructor
 	public Node(Node node)
 	{
+		ArrayList<String> nodeAttributes = node.getAttributes();
+		ArrayList<String> nodeAttributeNames = node.getAttributeNames();
+		int noOfAttributes = nodeAttributes.size();
+		int noOfAttributeNames = nodeAttributeNames.size();
+		Attributes = new ArrayList<String>(0);
+		AttributeNames = new ArrayList<String>(0);
+
 		realxcoordinate = node.getRealXcoordinate();
 		realycoordinate = node.getRealYcoordinate();
 		virtualxcoordinate = node.getVirtualXcoordinate();
 		virtualycoordinate = node.getVirtualYcoordinate();
 		number = node.getNumber();
-		depot = node.isDepot();
+
+		for(int i=0;i<noOfAttributes;i++)
+		{
+			Attributes.add(nodeAttributes.get(i));
+		}
+
+		for(int i=0;i<noOfAttributeNames;i++)
+		{
+			AttributeNames.add(nodeAttributeNames.get(i));
+		}
 	}
 
 	//official equals method
@@ -50,7 +72,7 @@ public class Node
 		if(node.getRealXcoordinate()==realxcoordinate & node.getRealYcoordinate()==realycoordinate
 				& node.getVirtualXcoordinate()==virtualxcoordinate
 				& node.getVirtualYcoordinate()==virtualycoordinate & node.getNumber()==number
-				& node.isDepot() == depot)
+				& node.getAttributes().equals(Attributes) & node.getAttributeNames().equals(AttributeNames))
 		{
 			return true;
 		}
@@ -58,6 +80,27 @@ public class Node
 		{
 			return false;
 		}
+	}
+
+	public void addAttribute(String attribute)
+	{
+		Attributes.add(attribute);
+	}
+
+	public void addAttributeName(String attributename)
+	{
+		AttributeNames.add(attributename);
+	}
+
+	//remove attributes
+	public void removeAttributes()
+	{
+		Attributes = new ArrayList<String>(0);
+	}
+
+	public void removeAttributeNames()
+	{
+		AttributeNames = new ArrayList<String>(0);
 	}
 
 	//sets virtual coordinates
@@ -98,8 +141,14 @@ public class Node
 		return number;
 	}
 
-	public boolean isDepot()
+	//Gives the attributes
+	public ArrayList<String> getAttributes()
 	{
-		return depot;
+		return Attributes;
+	}
+
+	public ArrayList<String> getAttributeNames()
+	{
+		return AttributeNames;
 	}
 }

@@ -25,7 +25,6 @@ public class Mouse {
 	        {
 	        	Circle circle = (Circle) t.getSource();
 	        	Node node;
-	        	String depot;
 
 	        	int nodeno = -1;
 	        	int noOfNodes = Executer.nodes.size();
@@ -47,19 +46,10 @@ public class Mouse {
 
 	        	node = Executer.nodes.get(nodeno);
 
-	        	if(node.isDepot())
-	        	{
-	        		depot = "yes";
-	        	}
-	        	else
-	        	{
-	        		depot = "no";
-	        	}
-
 	        	gc.setFont(new Font(Executer.defaultHeight/20));
 	        	gc.fillText("Node",60,60);
 	        	gc.setFont(new Font(Executer.defaultHeight/40));
-	        	gc.fillText("No: "+node.getNumber()+"\nDepot: "+depot+"\nCoordinates:\n("
+	        	gc.fillText("No: "+node.getNumber()+"\nCoordinates:\n("
 	        	+node.getRealXcoordinate()+","+node.getRealYcoordinate()+")",10,100);
 
 	        	circle.setRadius(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/60);
@@ -143,7 +133,6 @@ public class Mouse {
 	            	edge = path.getEdges().get(i).getNode1().getNumber()+"-"+path.getEdges().get(i).getNode2().getNumber()+"\n";
 	            	route = route + edge;
 	            }
-	            route = route + "Costs: "+path.getCosts();
 
 	            gc.setFont(new Font(Executer.defaultHeight/20));
 	            gc.fillText("Path",60,60);
@@ -255,7 +244,6 @@ public class Mouse {
 	            	edge = path.getEdges().get(i).getNode1().getNumber()+"-"+path.getEdges().get(i).getNode2().getNumber()+"\n";
 	            	route = route + edge;
 	            }
-	            route = route + "Costs: "+path.getCosts();
 
 	            gc.setFont(new Font(Executer.defaultHeight/20));
 	            gc.fillText("Path",60,60);
@@ -316,7 +304,7 @@ public class Mouse {
 
 		return(mouseOnArrowExit);
 	}
-	
+
 	public static EventHandler<MouseEvent> MouseclickOnArrow(GraphicsContext gc,Pane pane){
 		EventHandler<MouseEvent> mouseclickOnPolygon = new EventHandler<MouseEvent>() {
 
@@ -328,7 +316,7 @@ public class Mouse {
 	        	Circle circle;
 	        	ArrayList<Edge> edges;
 	        	boolean clicked = false;
-	        	
+
 	            int pathno = -1;
 	            int noOfNodes = Executer.nodes.size();
 	            int noOfPaths = Executer.paths.size();
@@ -343,7 +331,7 @@ public class Mouse {
 	        	{
 	        		clicked = true;
 	        	}
-	        	
+
 	        	for(int i=0;i<noOfPaths;i++)
 	        	{
 	        		edges = Executer.paths.get(i).getEdges();
@@ -377,14 +365,13 @@ public class Mouse {
 	            	edge = path.getEdges().get(i).getNode1().getNumber()+"-"+path.getEdges().get(i).getNode2().getNumber()+"\n";
 	            	route = route + edge;
 	            }
-	            route = route + "Costs: "+path.getCosts();	        	
 
 	        	if(clicked&clickedstate)
 	        	{
 	        		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-	        				        	
+
 		        	edges = Executer.paths.get(pathno).getEdges();
-		        	
+
 		            for(int i=0;i<edges.size();i++)
 		            {
 		            	arc = (Arc) (pane.getChildren().get(noOfNodes+2*(arccounter+i)));
@@ -395,14 +382,14 @@ public class Mouse {
 		            	polygon.getPoints().set(4,arc.getCenterX()+(arc.getRadiusX()-arrowwidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
 		            	polygon.getPoints().set(5,arc.getCenterY()-(arc.getRadiusX()-arrowwidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
 		            }
-		        	
+
 	        		for(int i=0;i<noOfNodes;i++)
 	        		{
 	        			circle = (Circle) (pane.getChildren().get(i));
 	    	        	circle.setOnMouseEntered(MouseOnCircleEnter(gc,pane));
 	    	        	circle.setOnMouseExited(MouseOnCircleExit(gc,pane));
 	        		}
-	        		
+
 	        		arccounter = 0;
 	        		for(int i=0;i<noOfPaths;i++)
 	        		{
@@ -419,7 +406,7 @@ public class Mouse {
 
 	        			arccounter += edges.size();
 	        		}
-		        	
+
 		        	clickedstate = false;
 	        	}
 	        	else
@@ -427,14 +414,14 @@ public class Mouse {
 		        	if(clickedstate)
 		        	{
 		        		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-		        		      		
+
 		        		for(int i=0;i<noOfNodes;i++)
 		        		{
 		        			circle = (Circle) (pane.getChildren().get(i));
 		    	        	circle.setRadius(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/120);
 		    	        	circle.setStrokeWidth(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/200);
 		    	        }
-		        		
+
 		        		arccounter = 0;
 		        		for(int i=0;i<noOfPaths;i++)
 		        		{
@@ -472,14 +459,14 @@ public class Mouse {
 		        	else
 		        	{
 		        		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-		        		
+
 		        		for(int i=0;i<noOfNodes;i++)
 		        		{
 		        			circle = (Circle) (pane.getChildren().get(i));
 		    	        	circle.setOnMouseEntered(null);
 		    	        	circle.setOnMouseExited(null);
 		    	        }
-		        		
+
 		        		arccounter = 0;
 		        		for(int i=0;i<noOfPaths;i++)
 		        		{
@@ -496,7 +483,7 @@ public class Mouse {
 
 		        			arccounter += edges.size();
 		        		}
-		        		
+
 		        		clickedstate = true;
 		        	}
 
@@ -510,7 +497,7 @@ public class Mouse {
 
 		return(mouseclickOnPolygon);
 	}
-	
+
 	public static EventHandler<MouseEvent> MouseclickOnEdge(GraphicsContext gc,Pane pane){
 		EventHandler<MouseEvent> mouseclickOnArc = new EventHandler<MouseEvent>() {
 
@@ -522,7 +509,7 @@ public class Mouse {
 	        	Circle circle;
 	        	ArrayList<Edge> edges;
 	        	boolean clicked = false;
-	        	
+
 	            int pathno = -1;
 	            int noOfNodes = Executer.nodes.size();
 	            int noOfPaths = Executer.paths.size();
@@ -535,7 +522,7 @@ public class Mouse {
 	        	{
 	        		clicked = true;
 	        	}
-	        	
+
 	        	for(int i=0;i<noOfPaths;i++)
 	        	{
 	        		edges = Executer.paths.get(i).getEdges();
@@ -569,14 +556,13 @@ public class Mouse {
 	            	edge = path.getEdges().get(i).getNode1().getNumber()+"-"+path.getEdges().get(i).getNode2().getNumber()+"\n";
 	            	route = route + edge;
 	            }
-	            route = route + "Costs: "+path.getCosts();	        	
 
 	        	if(clicked&clickedstate)
 	        	{
 	        		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-	        				        	
+
 		        	edges = Executer.paths.get(pathno).getEdges();
-		        	
+
 		            for(int i=0;i<edges.size();i++)
 		            {
 		            	arc = (Arc) (pane.getChildren().get(noOfNodes+2*(arccounter+i)));
@@ -587,14 +573,14 @@ public class Mouse {
 		            	polygon.getPoints().set(4,arc.getCenterX()+(arc.getRadiusX()-arrowwidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
 		            	polygon.getPoints().set(5,arc.getCenterY()-(arc.getRadiusX()-arrowwidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
 		            }
-		        	
+
 	        		for(int i=0;i<noOfNodes;i++)
 	        		{
 	        			circle = (Circle) (pane.getChildren().get(i));
 	    	        	circle.setOnMouseEntered(MouseOnCircleEnter(gc,pane));
 	    	        	circle.setOnMouseExited(MouseOnCircleExit(gc,pane));
 	        		}
-	        		
+
 	        		arccounter = 0;
 	        		for(int i=0;i<noOfPaths;i++)
 	        		{
@@ -611,7 +597,7 @@ public class Mouse {
 
 	        			arccounter += edges.size();
 	        		}
-		        	
+
 		        	clickedstate = false;
 	        	}
 	        	else
@@ -619,14 +605,14 @@ public class Mouse {
 		        	if(clickedstate)
 		        	{
 		        		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-		        		      		
+
 		        		for(int i=0;i<noOfNodes;i++)
 		        		{
 		        			circle = (Circle) (pane.getChildren().get(i));
 		    	        	circle.setRadius(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/120);
 		    	        	circle.setStrokeWidth(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/200);
 		    	        }
-		        		
+
 		        		arccounter = 0;
 		        		for(int i=0;i<noOfPaths;i++)
 		        		{
@@ -664,14 +650,14 @@ public class Mouse {
 		        	else
 		        	{
 		        		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-		        		
+
 		        		for(int i=0;i<noOfNodes;i++)
 		        		{
 		        			circle = (Circle) (pane.getChildren().get(i));
 		    	        	circle.setOnMouseEntered(null);
 		    	        	circle.setOnMouseExited(null);
 		    	        }
-		        		
+
 		        		arccounter = 0;
 		        		for(int i=0;i<noOfPaths;i++)
 		        		{
@@ -688,7 +674,7 @@ public class Mouse {
 
 		        			arccounter += edges.size();
 		        		}
-		        		
+
 		        		clickedstate = true;
 		        	}
 
@@ -702,7 +688,7 @@ public class Mouse {
 
 		return(mouseclickOnArc);
 	}
-	
+
 	public static EventHandler<MouseEvent> MouseclickOnCircle(GraphicsContext gc,Pane pane){
 		EventHandler<MouseEvent> mouseclickOnCircle = new EventHandler<MouseEvent>() {
 
@@ -713,7 +699,6 @@ public class Mouse {
 	        	Polygon polygon;
 	        	Node node;
 	        	ArrayList<Edge> edges;
-	        	String depot;
 	        	boolean clicked = false;
 
 	        	double arrowwidth = Math.min(Executer.defaultHeight,Executer.defaultWidth)/120;
@@ -721,7 +706,7 @@ public class Mouse {
 	        	int noOfNodes = Executer.nodes.size();
 	        	int noOfPaths = Executer.paths.size();
 	        	int arccounter = 0;
-	        	
+
 	        	if(circle.getRadius()==(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/60))
 	        	{
 	        		clicked = true;
@@ -743,21 +728,21 @@ public class Mouse {
 	        	}
 
 	        	node = Executer.nodes.get(nodeno);
-	        	
+
 	        	if(clicked&clickedstate)
 	        	{
 	        		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-	        		
+
 		        	circle.setRadius(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/120);
 		        	circle.setStrokeWidth(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/200);
-		        	
+
 	        		for(int i=0;i<noOfNodes;i++)
 	        		{
 	        			circle = (Circle) (pane.getChildren().get(i));
 	    	        	circle.setOnMouseEntered(MouseOnCircleEnter(gc,pane));
 	    	        	circle.setOnMouseExited(MouseOnCircleExit(gc,pane));
 	        		}
-	        		
+
 	        		for(int i=0;i<noOfPaths;i++)
 	        		{
 	        			edges = Executer.paths.get(i).getEdges();
@@ -773,31 +758,22 @@ public class Mouse {
 
 	        			arccounter += edges.size();
 	        		}
-	        		
+
 		        	clickedstate = false;
 	        	}
 	        	else
 	        	{
-		        	if(node.isDepot())
-		        	{
-		        		depot = "yes";
-		        	}
-		        	else
-		        	{
-		        		depot = "no";
-		        	}
-		        	
 		        	if(clickedstate)
 		        	{
 		        		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-		        		
+
 		        		for(int i=0;i<noOfNodes;i++)
 		        		{
 		        			circle = (Circle) (pane.getChildren().get(i));
 		    	        	circle.setRadius(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/120);
 		    	        	circle.setStrokeWidth(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/200);
 		        		}
-		        		
+
 		        		arccounter=0;
 		        		for(int i=0;i<noOfPaths;i++)
 		        		{
@@ -815,7 +791,7 @@ public class Mouse {
 
 		        			arccounter += edges.size();
 		        		}
-		        		
+
 		        		circle = (Circle) (pane.getChildren().get(nodeno));
 			        	circle.setRadius(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/60);
 			        	circle.setStrokeWidth(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/100);
@@ -823,13 +799,13 @@ public class Mouse {
 		        	else
 		        	{
 		        		gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-		        		
+
 		        		for(int i=0;i<noOfNodes;i++)
 		        		{
 		    	        	Executer.nodecircles[i].setOnMouseEntered(null);
 		    	        	Executer.nodecircles[i].setOnMouseExited(null);
 		        		}
-		        		
+
 		        		arccounter = 0;
 		        		for(int i=0;i<noOfPaths;i++)
 		        		{
@@ -846,14 +822,14 @@ public class Mouse {
 
 		        			arccounter += edges.size();
 		        		}
-		        		
+
 		        		clickedstate = true;
 		        	}
 
 		        	gc.setFont(new Font(Executer.defaultHeight/20));
 		        	gc.fillText("Node",60,60);
 		        	gc.setFont(new Font(Executer.defaultHeight/40));
-		        	gc.fillText("No: "+node.getNumber()+"\nDepot: "+depot+"\nCoordinates:\n("
+		        	gc.fillText("No: "+node.getNumber()+"\nCoordinates:\n("
 		        	+node.getRealXcoordinate()+","+node.getRealYcoordinate()+")",10,100);
 	        	}
 	        }

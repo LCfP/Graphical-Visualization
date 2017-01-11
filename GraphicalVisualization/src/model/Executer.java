@@ -3,10 +3,7 @@ import input.Input;
 import output.Resize;
 import output.WindowContent;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -35,7 +32,6 @@ public class Executer extends Application
 
 	public static void main(String[] args)
 	{
-		Scanner inputReader = null;
 		int edgecounter = 0;
 
 		nodes = new ArrayList<Node>(0);
@@ -48,20 +44,10 @@ public class Executer extends Application
 			System.exit(0);
 		}
 
-		//sets the input stream
-		try
-		{
-			inputReader = new Scanner(new FileInputStream(args[0]));
-		}
-		catch(FileNotFoundException e)
-		{
-			System.out.println("Error (scanner): File not found");
-			System.exit(0);
-		}
-
 		//Reads in the nodes and paths
-		nodes = Input.nodeReader(inputReader);
-		paths = Input.pathReader(inputReader,nodes);
+		Input.parse(args[0]);
+		//nodes = Input.nodeReader(inputReader);
+		//paths = Input.pathReader(inputReader,nodes);
 
 		nodecircles = new Circle[nodes.size()];
 

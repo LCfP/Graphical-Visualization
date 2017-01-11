@@ -49,16 +49,8 @@ public class WindowContent
         	Executer.nodecircles[i].setOnMouseEntered(Mouse.MouseOnCircleEnter(gc,pane));
         	Executer.nodecircles[i].setOnMouseExited(Mouse.MouseOnCircleExit(gc,pane));
         	Executer.nodecircles[i].setOnMouseClicked(Mouse.MouseclickOnCircle(gc, pane));
-
-        	if(nodes.get(i).isDepot())
-        	{
-        		Executer.nodecircles[i].setStroke(Color.rgb(180,0,255));
-        	}
-        	else
-        	{
-        		Executer.nodecircles[i].setStroke(Color.RED);
-        	}
-
+        	Executer.nodecircles[i].setStroke(Color.RED);
+        	
         	pane.getChildren().add(Executer.nodecircles[i]);
         }
 	}
