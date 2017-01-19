@@ -169,7 +169,7 @@ public class PathParse {
 
 				lineSplit = line.split("\\)");
 
-				for(int i=0;i<(lineSplit.length-1);i++)
+				for(int i=0;i<lineSplit.length;i++)
 				{
 					if(lineSplit[i].contains("("))
 					{
@@ -244,7 +244,7 @@ public class PathParse {
 					Input.FileNotCompatible("( missing");
 				}
 
-				for(int i=1;i<(lineSplit.length-1);i++)
+				for(int i=1;i<lineSplit.length;i++)
 				{
 					if(lineSplit[i].contains("("))
 					{

@@ -3,14 +3,13 @@ package output;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import model.Executer;
 
 public class Resize {
 
-	public static ChangeListener<? super Number> getListener(Scene scene,Canvas textcanvas,Pane pane)
+	public static ChangeListener<? super Number> getListener(Scene scene,Pane drawPane)
 	{
 		final ChangeListener<Number> listener = new ChangeListener<Number>()
 		{
@@ -18,19 +17,14 @@ public class Resize {
 			//Resets the canvas sizes and redraws the nodes and paths
 			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
 
-				Executer.defaultHeight = scene.getHeight();
-				Executer.defaultWidth = scene.getWidth();
-				
-				pane.getChildren().clear();
-				GraphicsContext gc = textcanvas.getGraphicsContext2D();
+				WindowContent.updateDefaultSizes(scene);
 
-				gc.clearRect(0, 0, gc.getCanvas().getWidth(), gc.getCanvas().getHeight());
-				textcanvas.setHeight(scene.getHeight());
-				textcanvas.setWidth(0.2*scene.getWidth());
-				
-				pane.getChildren().clear();
+				drawPane.getChildren().clear();
 
-				WindowContent.drawAll(textcanvas,pane, Executer.nodes, Executer.paths);
+				Executer.titleLabel = new Label("");
+				Executer.mainLabel = new Label("");
+				drawPane.getChildren().addAll(Executer.titleLabel,Executer.mainLabel);
+				WindowContent.drawAll(drawPane, Executer.nodes, Executer.paths);
 			}
 
 		};

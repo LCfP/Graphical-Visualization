@@ -7,8 +7,8 @@ public class Node
 	//Node has an x and y coordinate and a number
 	private double realxcoordinate;
 	private double realycoordinate;
-	private double virtualxcoordinate;
-	private double virtualycoordinate;
+	private double[][] virtualxcoordinates;
+	private double[][] virtualycoordinates;
 	private int number;
 
 	//attributes of the node
@@ -20,8 +20,10 @@ public class Node
 	{
 		realxcoordinate = x;
 		realycoordinate = y;
-		virtualxcoordinate = x;
-		virtualycoordinate = y;
+		virtualxcoordinates = new double[1][1];
+		virtualycoordinates = new double[1][1];
+		virtualxcoordinates[0][0] = x;
+		virtualycoordinates[0][0] = y;
 		number = no;
 		Attributes = new ArrayList<String>(0);
 		AttributeNames = new ArrayList<String>(0);
@@ -34,13 +36,29 @@ public class Node
 		ArrayList<String> nodeAttributeNames = node.getAttributeNames();
 		int noOfAttributes = nodeAttributes.size();
 		int noOfAttributeNames = nodeAttributeNames.size();
+		int[] noOfVirtualCoordinates = new int[2];
 		Attributes = new ArrayList<String>(0);
 		AttributeNames = new ArrayList<String>(0);
+		double[][] nodeVirtualXcoordinates = node.getVirtualXcoordinates();
+		double[][] nodeVirtualYcoordinates = node.getVirtualYcoordinates();
 
 		realxcoordinate = node.getRealXcoordinate();
 		realycoordinate = node.getRealYcoordinate();
-		virtualxcoordinate = node.getVirtualXcoordinate();
-		virtualycoordinate = node.getVirtualYcoordinate();
+
+		noOfVirtualCoordinates[0] = nodeVirtualXcoordinates.length;
+		noOfVirtualCoordinates[1] = nodeVirtualXcoordinates[0].length;
+		virtualxcoordinates = new double[noOfVirtualCoordinates[0]][noOfVirtualCoordinates[1]];
+		virtualycoordinates = new double[noOfVirtualCoordinates[0]][noOfVirtualCoordinates[1]];
+
+		for(int x=0;x<noOfVirtualCoordinates[0];x++)
+		{
+			for(int y=0;y<noOfVirtualCoordinates[1];y++)
+			{
+				virtualxcoordinates[x][y] = nodeVirtualXcoordinates[x][y];
+				virtualycoordinates[x][y] = nodeVirtualYcoordinates[x][y];
+			}
+		}
+
 		number = node.getNumber();
 
 		for(int i=0;i<noOfAttributes;i++)
@@ -69,9 +87,44 @@ public class Node
 
 	//Equals method
 	public boolean equals(Node node){
+		double[][] nodeVirtualXcoordinates = node.getVirtualXcoordinates();
+		double[][] nodeVirtualYcoordinates = node.getVirtualYcoordinates();
+		int[] noOfVirtualCoordinates = new int[2];
+		boolean virtualCoordinatesTest = true;
+		noOfVirtualCoordinates[0] = nodeVirtualXcoordinates.length;
+		noOfVirtualCoordinates[1] = nodeVirtualXcoordinates[0].length;
+
+		if(noOfVirtualCoordinates[0] == virtualxcoordinates.length & noOfVirtualCoordinates[1] == virtualxcoordinates[0].length)
+		{
+			for(int x=0;x<noOfVirtualCoordinates[0];x++)
+			{
+				if(!virtualCoordinatesTest)
+				{
+					break;
+				}
+
+				for(int y=0;y<noOfVirtualCoordinates[1];y++)
+				{
+					if(virtualxcoordinates[x][y] != nodeVirtualXcoordinates[x][y])
+					{
+						virtualCoordinatesTest = false;
+						break;
+					}
+					if(virtualycoordinates[x][y] != nodeVirtualYcoordinates[x][y])
+					{
+						virtualCoordinatesTest = false;
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			virtualCoordinatesTest = false;
+		}
+
 		if(node.getRealXcoordinate()==realxcoordinate & node.getRealYcoordinate()==realycoordinate
-				& node.getVirtualXcoordinate()==virtualxcoordinate
-				& node.getVirtualYcoordinate()==virtualycoordinate & node.getNumber()==number
+				& virtualCoordinatesTest & node.getNumber()==number
 				& node.getAttributes().equals(Attributes) & node.getAttributeNames().equals(AttributeNames))
 		{
 			return true;
@@ -104,14 +157,56 @@ public class Node
 	}
 
 	//sets virtual coordinates
-	public void setVirtualXcoordinate(double newX)
+	public void setVirtualXcoordinates(double[][] newX)
 	{
-		virtualxcoordinate = newX;
+		int[] noOfNewCoordinates = new int[2];
+		noOfNewCoordinates[0] = newX.length;
+		noOfNewCoordinates[1] = newX[0].length;
+
+		virtualxcoordinates = new double[noOfNewCoordinates[0]][noOfNewCoordinates[1]];
+
+		for(int x=0;x<noOfNewCoordinates[0];x++)
+		{
+			for(int y=0;y<noOfNewCoordinates[1];y++)
+			{
+				virtualxcoordinates[x][y] = newX[x][y];
+			}
+		}
 	}
 
-	public void setVirtualYcoordinate(double newY)
+	public void setVirtualYcoordinates(double[][] newY)
 	{
-		virtualycoordinate = newY;
+		int[] noOfNewCoordinates = new int[2];
+		noOfNewCoordinates[0] = newY.length;
+		noOfNewCoordinates[1] = newY[0].length;
+
+		virtualycoordinates = new double[noOfNewCoordinates[0]][noOfNewCoordinates[1]];
+
+		for(int x=0;x<noOfNewCoordinates[0];x++)
+		{
+			for(int y=0;y<noOfNewCoordinates[1];y++)
+			{
+				virtualycoordinates[x][y] = newY[x][y];
+			}
+		}
+	}
+
+	public int noOfVirtualCoordinates()
+	{
+		int no = 0;
+
+		for(int x=0;x<virtualxcoordinates.length;x++)
+		{
+			for(int y=0;y<virtualxcoordinates[0].length;y++)
+			{
+				if(virtualxcoordinates[x][y] != 0)
+				{
+					no++;
+				}
+			}
+		}
+
+		return(no);
 	}
 
 	//Gives the real coordinates
@@ -126,14 +221,14 @@ public class Node
 	}
 
 	//Gives the virtual coordinates
-	public double getVirtualXcoordinate()
+	public double[][] getVirtualXcoordinates()
 	{
-		return virtualxcoordinate;
+		return virtualxcoordinates;
 	}
 
-	public double getVirtualYcoordinate()
+	public double[][] getVirtualYcoordinates()
 	{
-		return virtualycoordinate;
+		return virtualycoordinates;
 	}
 
 	public int getNumber()

@@ -6,53 +6,163 @@ import model.Executer;
 
 import java.util.ArrayList;
 
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
+import javafx.scene.text.Font;
 
 public class WindowContent
 {
-	//Draw all elements on the canvas
-	public static void drawAll(Canvas textcanvas,Pane pane,ArrayList<Node> nodes,ArrayList<Path> paths)
+	//default screensizes
+	public static double defaultWidth = 1200;
+	public static double defaultHeight = 900;
+
+	public static int noOfScreensX = 1;
+	public static int noOfScreensY = 1;
+	public static double defaultCircleRadius = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/120;
+	public static double defaultCircleWidth = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/200;
+	public static double defaultArrowWidth = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/120;
+	public static double defaultArcWidth = Math.min(defaultHeight/noOfScreensY,defaultWidth/noOfScreensX)/400;
+
+	public static void updateDefaultSizes(Scene scene)
 	{
-        Coordinates.adjustVirtualCoordinates(nodes);
+		defaultHeight = scene.getHeight();
+		defaultWidth = scene.getWidth();
+		updateOtherSizes();
+	}
 
-        drawNodes(textcanvas,pane,nodes);
-        int noOfPaths = paths.size();
-        int count = 0;
+	public static void updateOtherSizes()
+	{
+		noOfScreensX = Executer.nodes.get(0).getVirtualXcoordinates().length;
+		noOfScreensY = Executer.nodes.get(0).getVirtualXcoordinates()[0].length;
+		defaultCircleRadius = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/120;
+		defaultCircleWidth = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/200;
+		defaultArrowWidth = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/120;
+		defaultArcWidth = Math.min(defaultHeight/noOfScreensY,defaultWidth/noOfScreensX)/400;
+	}
 
-        for(int i=0;i<noOfPaths;i++)
-        {
-        	count += ArcDraw.drawArcs(textcanvas,pane,count,paths.get(i));
-        }
+	//Draw all elements on the canvas
+	public static void drawAll(Pane drawPane,ArrayList<Node> nodes,ArrayList<Path> paths)
+	{
+		Path path;
+		ArrayList<String> attributes;
+		int count = 0;
+		int attributeNo;
+		int noOfAttributes;
+		int noOfPaths = paths.size();
+        int edgecounter = 0;
+
+		for(int i=0;i<paths.size();i++)
+		{
+			edgecounter += paths.get(i).getEdges().size();
+		}
+
+		if(Executer.attributeName.equals(""))
+		{		
+			Label allLabel = new Label("All paths");
+			
+			Coordinates.adjustVirtualCoordinates(nodes,1,1,1);
+			WindowContent.updateOtherSizes();
+			drawNodes(drawPane,nodes);
+						
+			allLabel.setFont(new Font(Math.min(defaultWidth/30,defaultHeight/20)));
+			allLabel.setLayoutX(0.2*defaultWidth);
+			allLabel.setLayoutY(Executer.menuBarHeight);
+			drawPane.getChildren().add(allLabel);
+
+			Executer.edgearcs = new Arc[edgecounter][1][1];
+			Executer.arrowpolygons = new Polygon[edgecounter][1][1];
+
+	        for(int i=0;i<noOfPaths;i++)
+	        {
+	        	count += ArcDraw.drawArcs(drawPane,count,paths.get(i),0,0);
+	        }
+		}
+		else
+		{
+			attributes = Sort.getDistinctAttributes(Executer.attributeName);
+			attributeNo = Sort.getAttributeNo(Executer.attributeName);
+			noOfAttributes = attributes.size();
+			noOfScreensX = (int) (Math.sqrt(noOfAttributes - 1)+1);
+			noOfScreensY = (int) ((noOfAttributes - 1) / noOfScreensX + 1);
+			Label[] labels = new Label[noOfAttributes];
+
+			Coordinates.adjustVirtualCoordinates(Executer.nodes,noOfScreensX,noOfScreensY,noOfAttributes);
+			WindowContent.updateOtherSizes();
+			drawNodes(drawPane,nodes);
+			
+			for(int i=0;i<noOfAttributes;i++)
+			{
+				labels[i] = new Label(Executer.attributeName+" = "+attributes.get(i));
+				labels[i].setFont(new Font(Math.min(defaultWidth/30/noOfScreensX,defaultHeight/20/noOfScreensY)));
+				labels[i].setLayoutX(0.2*defaultWidth+(i%noOfScreensX)*0.8*defaultWidth/noOfScreensX);
+				labels[i].setLayoutY(Executer.menuBarHeight+(i/noOfScreensY)*(defaultHeight-Executer.menuBarHeight)/noOfScreensY);
+				drawPane.getChildren().add(labels[i]);
+			}
+
+			Executer.edgearcs = new Arc[edgecounter][noOfScreensX][noOfScreensY];
+			Executer.arrowpolygons = new Polygon[edgecounter][noOfScreensX][noOfScreensY];
+
+			for(int j=0;j<noOfPaths;j++)
+			{
+				for(int i=0;i<noOfAttributes;i++)
+				{
+					path = paths.get(j);
+
+					if(path.getAttributes().get(attributeNo).equals(attributes.get(i)))
+					{
+						count += ArcDraw.drawArcs(drawPane,count,path,i%noOfScreensX,i/noOfScreensX);
+					}
+				}
+			}
+		}
 	}
 
 
 	//Draws all nodes as red circles
-	public static void drawNodes(Canvas textcanvas,Pane pane,ArrayList<Node> nodes)
+	public static void drawNodes(Pane drawPane,ArrayList<Node> nodes)
 	{
+		int noOfScreens = nodes.get(0).noOfVirtualCoordinates();
 		int NoNodes = nodes.size();
-		double nodeRadius;
-		double[][] virtualcoordinates = Coordinates.getVirtualCoordinates(nodes);
-		GraphicsContext gc = textcanvas.getGraphicsContext2D();
+		double[][][][] virtualcoordinates = Coordinates.getVirtualCoordinates(nodes);
+		int noOfScreensX = virtualcoordinates[0][0].length;
+		int noOfScreensY = virtualcoordinates[0][0][0].length;
+		Circle[][][] circles = new Circle[NoNodes][noOfScreensX][noOfScreensY];
 
-        nodeRadius = Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/120;
+		drawPane.getChildren().clear();
+		Executer.titleLabel.setText("");
+		Executer.mainLabel.setText("");
+		drawPane.getChildren().add(Executer.titleLabel);
+		drawPane.getChildren().add(Executer.mainLabel);
 
-        for(int i=0;i<NoNodes;i++)
+        for(int x=0;x<noOfScreensX;x++)
         {
-        	Executer.nodecircles[i] = new Circle(virtualcoordinates[0][i],virtualcoordinates[1][i],nodeRadius);
-        	Executer.nodecircles[i].setFill(Color.WHITE);
-        	Executer.nodecircles[i].setStrokeWidth(Math.min(Executer.defaultHeight, 0.8*Executer.defaultWidth)/200);
+        	for(int y=0;y<noOfScreensY;y++)
+            {
+        		if((noOfScreensX*y+x)<noOfScreens)
+        		{
+                    for(int i=0;i<NoNodes;i++)
+                    {
+                    	circles[i][x][y] = new Circle(virtualcoordinates[0][i][x][y],virtualcoordinates[1][i][x][y],defaultCircleRadius);
+                    	circles[i][x][y].setFill(Color.WHITE);
+                    	circles[i][x][y].setStrokeWidth(defaultCircleWidth);
 
-        	Executer.nodecircles[i].setOnMouseEntered(Mouse.MouseOnCircleEnter(gc,pane));
-        	Executer.nodecircles[i].setOnMouseExited(Mouse.MouseOnCircleExit(gc,pane));
-        	Executer.nodecircles[i].setOnMouseClicked(Mouse.MouseclickOnCircle(gc, pane));
-        	Executer.nodecircles[i].setStroke(Color.RED);
-        	
-        	pane.getChildren().add(Executer.nodecircles[i]);
+                    	circles[i][x][y].setOnMouseEntered(Mouse.MouseOnCircleEnter(drawPane));
+                    	circles[i][x][y].setOnMouseExited(Mouse.MouseOnCircleExit(drawPane));
+                    	circles[i][x][y].setOnMouseClicked(Mouse.MouseclickOnCircle(drawPane));
+                    	circles[i][x][y].setStroke(Color.RED);
+
+                    	drawPane.getChildren().add(circles[i][x][y]);
+                    }
+        		}
+            }
         }
+
+    	Executer.nodecircles = circles;
 	}
 
 	public static int[] inventColor(int index)

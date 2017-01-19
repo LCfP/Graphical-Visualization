@@ -1,13 +1,17 @@
 package model;
 import input.Input;
 import output.Resize;
+import output.Sort;
 import output.WindowContent;
 
 import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Arc;
@@ -22,20 +26,22 @@ public class Executer extends Application
 	public static ArrayList<Node> nodes;
 	public static ArrayList<Path> paths;
 
-	public static Circle[] nodecircles;
-	public static Arc[] edgearcs;
-	public static Polygon[] arrowpolygons;
+	public static Circle[][][] nodecircles;
+	public static Arc[][][] edgearcs;
+	public static Polygon[][][] arrowpolygons;
 
-	//default screensizes
-	public static double defaultWidth = 800;
-	public static double defaultHeight = 600;
+	public static Menu sortMenu;
+	public static double menuBarHeight;
+	public static String attributeName;
+
+	public static Label titleLabel;
+	public static Label mainLabel;
 
 	public static void main(String[] args)
 	{
-		int edgecounter = 0;
-
 		nodes = new ArrayList<Node>(0);
 		paths = new ArrayList<Path>(0);
+		attributeName = "";
 
 		//checks whether the program has 1 argument
 		if(args.length != 1)
@@ -46,18 +52,6 @@ public class Executer extends Application
 
 		//Reads in the nodes and paths
 		Input.parse(args[0]);
-		//nodes = Input.nodeReader(inputReader);
-		//paths = Input.pathReader(inputReader,nodes);
-
-		nodecircles = new Circle[nodes.size()];
-
-		for(int i=0;i<paths.size();i++)
-		{
-			edgecounter += paths.get(i).getEdges().size();
-		}
-
-		edgearcs = new Arc[edgecounter];
-		arrowpolygons = new Polygon[edgecounter];
 
 		//Prints nodes and paths to the screen
 		Input.printNodes(nodes);
@@ -71,23 +65,37 @@ public class Executer extends Application
 	public void start(Stage stage) throws Exception {
 		stage.setTitle("Nodes and paths");
 
-	    GridPane root = new GridPane();
+	    BorderPane root = new BorderPane();
 
-		Scene scene = new Scene(root,defaultWidth,defaultHeight);
+		Scene scene = new Scene(root,WindowContent.defaultWidth,WindowContent.defaultHeight);
 		stage.setScene(scene);
 
-		Canvas textcanvas = new Canvas(0.2*defaultWidth,defaultHeight);
-		root.add(textcanvas,1,1);
+		MenuBar menuBar = new MenuBar();
+	    menuBar.prefWidthProperty().bind(stage.widthProperty());
+	    root.setTop(menuBar);
 
-		Pane pane = new Pane();
-		root.add(pane, 2,1);
+	    GridPane middlePane = new GridPane();
+	    root.setCenter(middlePane);
+	    Pane drawPane = new Pane();
+		middlePane.add(drawPane,1,1);
 
-	    scene.heightProperty().addListener(Resize.getListener(scene,textcanvas,pane));
-	    scene.widthProperty().addListener(Resize.getListener(scene,textcanvas,pane));
+	    Menu displayMenu = new Menu("Display");
+	    menuBar.getMenus().add(displayMenu);
 
-	    WindowContent.drawAll(textcanvas,pane,nodes,paths);
+		Sort.makeSortMenu(drawPane);
+	    displayMenu.getItems().add(sortMenu);
 
 	    stage.show();
-	}
 
+	    menuBarHeight = menuBar.getHeight();
+
+		titleLabel = new Label("");
+		mainLabel = new Label("");
+		drawPane.getChildren().addAll(titleLabel,mainLabel);
+
+	    scene.heightProperty().addListener(Resize.getListener(scene,drawPane));
+	    scene.widthProperty().addListener(Resize.getListener(scene,drawPane));
+
+	    WindowContent.drawAll(drawPane,nodes,paths);
+	}
 }
