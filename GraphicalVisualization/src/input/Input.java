@@ -1,144 +1,103 @@
 package input;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 import model.Edge;
+import model.Executer;
 import model.Node;
 import model.Path;
 
 public class Input {
 
-	public static ArrayList<Node> nodeReader(Scanner inputScanner)
+	public static void parse(String link)
 	{
-		String text;
-		int nodecounter = 1;
-		int nodenumber;
-		double xcoordinate;
-		double ycoordinate;
-		ArrayList<Node> Nodes = new ArrayList<Node>(0);
+		Scanner inputReader = null;
+		ArrayList<Node> nodes;
+		ArrayList<Path> paths;
 
-		//read out the nodes
-		if(inputScanner.hasNextLine())
+		//sets the input stream
+		try
 		{
-			if(inputScanner.nextLine().equals("Nodes:"))
-			{
-				while(inputScanner.hasNextLine())
-				{
-					text = inputScanner.nextLine();
-						if(text.equals("")){
-						break;
-					}
+			inputReader = new Scanner(new FileInputStream(link));
 
-					try
-					{
-						nodenumber = Integer.parseInt(text.split("\t")[0]);
-						xcoordinate = Double.parseDouble(text.split("\t")[1].split(",")[0]);
-						ycoordinate = Double.parseDouble(text.split("\t")[1].split(",")[1]);
+			nodes = NodeParse.nodeParser(inputReader);
+			paths = PathParse.pathParser(inputReader,nodes);
 
-						if(nodenumber != nodecounter)
-						{
-							System.out.println("Error (scanner): File not compatible");
-							System.exit(0);
-						}
-
-						Nodes.add(new Node(xcoordinate,ycoordinate,nodenumber));
-						System.out.println("Node added");
-
-						nodecounter ++;
-					}
-					catch(NumberFormatException e)
-					{
-						System.out.println("Error (scanner): File not compatible");
-						System.exit(0);
-					}
-				}
-			}
+			Executer.nodes = nodes;
+			Executer.paths = paths;
 		}
-
-		return(Nodes);
-	}
-
-	public static ArrayList<Path> pathReader(Scanner inputScanner,ArrayList<Node> Nodes)
-	{
-		String text;
-		String[] Pathnodes;
-		int[] pathnodes;
-		int pathnodeslength;
-		int pathcounter=1;
-		ArrayList<Path> Paths = new ArrayList<Path>(0);
-
-		//read out the paths
-		if(inputScanner.hasNextLine())
+		catch(FileNotFoundException e)
 		{
-			if(inputScanner.nextLine().equals("Paths:"))
-			{
-				while(inputScanner.hasNextLine())
-				{
-					text = inputScanner.nextLine();
-
-					if(text.equals("")){
-						break;
-					}
-
-					try
-					{
-						Pathnodes = text.split(" ");
-						pathnodeslength = Pathnodes.length;
-
-						if(pathnodeslength<1)
-						{
-							System.out.println("Error (scanner): File not compatible");
-							System.exit(0);
-						}
-
-						pathnodes = new int[2];
-
-						Paths.add(new Path());
-
-						for(int i=0;i<pathnodeslength;i++)
-						{
-							pathnodes[0] = Integer.parseInt(Pathnodes[i].split("-")[0]);
-							pathnodes[1] = Integer.parseInt(Pathnodes[i].split("-")[1]);
-
-							if(pathnodes[0]<1 | pathnodes[0]>(Nodes.size()) | pathnodes[1]<1 | pathnodes[1]>(Nodes.size()))
-							{
-								System.out.println("Error (scanner): File not compatible");
-								System.exit(0);
-							}
-
-							Paths.get(pathcounter-1).addEdge(new Edge(Nodes.get(pathnodes[0]-1),Nodes.get(pathnodes[1]-1),true));
-						}
-
-						System.out.println("Path added");
-
-						pathcounter ++;
-					}
-					catch(NumberFormatException e)
-					{
-						System.out.println("Error (scanner): File not compatible");
-						System.exit(0);
-					}
-					catch(IndexOutOfBoundsException f){
-						System.out.println("Error (scanner): File not compatible");
-						System.exit(0);
-					}
-				}
-			}
+			System.out.println("Error (scanner): File not found");
+			System.exit(0);
 		}
-
-		return(Paths);
 	}
 
 	//Output the nodes to the screen
 	public static void printNodes(ArrayList<Node> Nodes)
 	{
-		System.out.println("");
-		System.out.println("Nodes:");
+		String outputLine;
+		Node node;
+		int noOfAttributes;
+		int noOfNodes;
+		ArrayList<String> AttributeNames;
+		ArrayList<String> Attributes;
 
-		for(int i=0;i<(Nodes.size());i++)
+		System.out.println("");
+
+		noOfNodes = Nodes.size();
+		if(noOfNodes>0)
 		{
-			System.out.printf("%d\t%s,%s\n",Nodes.get(i).getNumber(),Nodes.get(i).getXcoordinate(),Nodes.get(i).getYcoordinate());
+			node = Nodes.get(0);
+			noOfAttributes = node.getAttributes().size();
+
+			if(noOfAttributes>0)
+			{
+				AttributeNames = node.getAttributeNames();
+
+				outputLine = "(";
+
+				for(int i=0;i<(noOfAttributes-1);i++)
+				{
+					outputLine = outputLine + AttributeNames.get(i) +",";
+				}
+				outputLine = outputLine + AttributeNames.get(noOfAttributes-1) +")";
+				outputLine = outputLine + " Nodes:";
+
+				System.out.println(outputLine);
+
+				for(int j=0;j<noOfNodes;j++)
+				{
+					node = Nodes.get(j);
+					Attributes = node.getAttributes();
+
+					outputLine = "(";
+
+					for(int i=0;i<(noOfAttributes-1);i++)
+					{
+						outputLine = outputLine + Attributes.get(i) +",";
+					}
+					outputLine = outputLine + Attributes.get(noOfAttributes-1) +")";
+					outputLine = outputLine + " " + node.getNumber() + " ";
+					outputLine = outputLine + node.getRealXcoordinate() + ",";
+					outputLine = outputLine + node.getRealYcoordinate();
+
+					System.out.println(outputLine);
+				}
+			}
+			else
+			{
+				System.out.println("Nodes:");
+
+				for(int i=0;i<(Nodes.size());i++)
+				{
+					System.out.printf("%d %s,%s\n",Nodes.get(i).getNumber(),Nodes.get(i).getRealXcoordinate()
+							,Nodes.get(i).getRealYcoordinate());
+				}
+			}
 		}
 	}
 
@@ -146,23 +105,172 @@ public class Input {
 	public static void printPaths(ArrayList<Path> Paths)
 	{
 		String Outputpath;
+		int noOfPathAttributes;
+		int noOfEdgeAttributes;
 		ArrayList<Edge> OutputEdges = new ArrayList<Edge>(0);
+		ArrayList<String> attributeNames;
+		ArrayList<String> attributes;
+		Path path;
+		Edge edge;
 
 		System.out.println("");
-		System.out.println("Paths:");
 
-		for(int i=0;i<(Paths.size());i++)
+		if(Paths.size()>0)
 		{
-			OutputEdges = Paths.get(i).getEdges();
+			path = Paths.get(0);
+			edge = path.getEdges().get(0);
+			noOfPathAttributes = path.getAttributes().size();
+			noOfEdgeAttributes = edge.getAttributes().size();
 
-			for(int j=0;j<OutputEdges.size();j++)
+			if(noOfPathAttributes > 0)
 			{
-				Outputpath = OutputEdges.get(j).getNode1().getNumber() +"-"+OutputEdges.get(j).getNode2().getNumber()+" ";
-				System.out.printf("%s",Outputpath);
-			}
+				attributeNames = path.getAttributeNames();
+				Outputpath = "(";
 
-			System.out.println("");
+				if(noOfPathAttributes>1)
+				{
+					for(int i=0;i<(noOfPathAttributes-1);i++)
+					{
+						Outputpath = Outputpath + attributeNames.get(i) +",";
+					}
+				}
+
+				Outputpath = Outputpath + attributeNames.get(noOfPathAttributes-1) +")";
+				Outputpath = Outputpath + " Paths";
+
+				if(noOfEdgeAttributes > 0)
+				{
+					attributeNames = edge.getAttributeNames();
+					Outputpath = Outputpath + "(";
+
+					if(noOfEdgeAttributes>1)
+					{
+						for(int i=0;i<(noOfEdgeAttributes-1);i++)
+						{
+							Outputpath = Outputpath + attributeNames.get(i) +",";
+						}
+					}
+
+					Outputpath = Outputpath + attributeNames.get(noOfEdgeAttributes-1) +")";
+				}
+				
+				Outputpath = Outputpath + ":";
+				System.out.println(Outputpath);
+
+				for(int i=0;i<(Paths.size());i++)
+				{
+					path = Paths.get(i);
+					OutputEdges = path.getEdges();
+					attributes = path.getAttributes();
+					Outputpath = "(";
+
+					if(noOfPathAttributes>1)
+					{
+						for(int j=0;j<(noOfPathAttributes-1);j++)
+						{
+							Outputpath = Outputpath + attributes.get(j) +",";
+						}
+					}
+
+					Outputpath = Outputpath + attributes.get(noOfPathAttributes-1) + ")" + " ";
+
+					if(noOfEdgeAttributes > 0)
+					{
+						for(int j=0;j<OutputEdges.size();j++)
+						{
+							attributes = OutputEdges.get(j).getAttributes();
+							Outputpath = Outputpath + OutputEdges.get(j).getNode1().getNumber() +"-"+OutputEdges.get(j).getNode2().getNumber()+" ";
+							Outputpath = Outputpath + "(";
+							
+							if(noOfEdgeAttributes>1)
+							{
+								for(int k=0;k<(noOfEdgeAttributes-1);k++)
+								{
+									Outputpath = Outputpath + attributes.get(k) +",";
+								}
+							}
+
+							Outputpath = Outputpath + attributes.get(noOfEdgeAttributes-1) +")" +" ";
+						}
+					}
+					else
+					{
+						for(int j=0;j<OutputEdges.size();j++)
+						{
+							Outputpath = Outputpath + OutputEdges.get(j).getNode1().getNumber() +"-"+OutputEdges.get(j).getNode2().getNumber()+" ";
+						}
+					}
+
+					System.out.println(Outputpath);
+				}
+			}
+			else
+			{
+				System.out.println("Paths:");
+
+				for(int i=0;i<(Paths.size());i++)
+				{
+					path = Paths.get(i);
+					OutputEdges = path.getEdges();
+
+					for(int j=0;j<OutputEdges.size();j++)
+					{
+						Outputpath = OutputEdges.get(j).getNode1().getNumber() +"-"+OutputEdges.get(j).getNode2().getNumber()+" ";
+						System.out.printf("%s",Outputpath);
+					}
+					System.out.println("");
+				}
+			}
 		}
 	}
 
+	public static ArrayList<String> getAttributesFromString(String string)
+	{
+		ArrayList<String> Attributes = new ArrayList<String>(0);
+		String[] lineSplit;
+		int noOfAttributes;
+
+
+		if(string.contains(","))
+		{
+			lineSplit = string.split(",");
+			noOfAttributes = lineSplit.length;
+
+			for(int i=0;i<noOfAttributes;i++)
+			{
+				lineSplit[i] = lineSplit[i].trim();
+
+				if(lineSplit[i].equals(""))
+				{
+					Input.FileNotCompatible("empty attribute name");
+				}
+				else
+				{
+					Attributes.add(lineSplit[i]);
+				}
+			}
+		}
+		else
+		{
+			string = string.trim();
+
+			if(string.equals(""))
+			{
+				Input.FileNotCompatible("empty attribute name");
+			}
+			else
+			{
+				noOfAttributes = 1;
+				Attributes.add(string);
+			}
+		}
+
+		return(Attributes);
+	}
+
+	public static void FileNotCompatible(String message)
+	{
+		System.out.println("Error (scanner): File not compatible: "+message);
+		System.exit(0);
+	}
 }

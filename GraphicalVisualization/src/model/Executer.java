@@ -1,18 +1,22 @@
 package model;
 import input.Input;
 import output.Resize;
+import output.Sort;
 import output.WindowContent;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
-import java.util.Scanner;
 
 import javafx.application.Application;
-import javafx.scene.Group;
 import javafx.scene.Scene;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Label;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.shape.Arc;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Polygon;
 import javafx.stage.Stage;
 
 public class Executer extends Application
@@ -22,16 +26,22 @@ public class Executer extends Application
 	public static ArrayList<Node> nodes;
 	public static ArrayList<Path> paths;
 
-	//default screensizes
-	public static double defaultWidth = 800;
-	public static double defaultHeight = 600;
+	public static Circle[][][] nodecircles;
+	public static Arc[][][] edgearcs;
+	public static Polygon[][][] arrowpolygons;
+
+	public static Menu sortMenu;
+	public static double menuBarHeight;
+	public static String attributeName;
+
+	public static Label titleLabel;
+	public static Label mainLabel;
 
 	public static void main(String[] args)
 	{
-		Scanner inputReader = null;
-
 		nodes = new ArrayList<Node>(0);
 		paths = new ArrayList<Path>(0);
+		attributeName = "";
 
 		//checks whether the program has 1 argument
 		if(args.length != 1)
@@ -40,20 +50,8 @@ public class Executer extends Application
 			System.exit(0);
 		}
 
-		//sets the input stream
-		try
-		{
-			inputReader = new Scanner(new FileInputStream(args[0]));
-		}
-		catch(FileNotFoundException e)
-		{
-			System.out.println("Error (scanner): File not found");
-			System.exit(0);
-		}
-
 		//Reads in the nodes and paths
-		nodes = Input.nodeReader(inputReader);
-		paths = Input.pathReader(inputReader,nodes);
+		Input.parse(args[0]);
 
 		//Prints nodes and paths to the screen
 		Input.printNodes(nodes);
@@ -66,20 +64,38 @@ public class Executer extends Application
 	//Standard JavaFX method
 	public void start(Stage stage) throws Exception {
 		stage.setTitle("Nodes and paths");
-		Group root = new Group();
-		Scene scene = new Scene(root,defaultWidth,defaultHeight);
+
+	    BorderPane root = new BorderPane();
+
+		Scene scene = new Scene(root,WindowContent.defaultWidth,WindowContent.defaultHeight);
 		stage.setScene(scene);
-		Canvas canvas = new Canvas(defaultWidth,defaultHeight);
-		root.getChildren().add(canvas);
-	    GraphicsContext gc = canvas.getGraphicsContext2D();
 
-	    scene.heightProperty().addListener(Resize.getListener(scene,gc));
-	    scene.widthProperty().addListener(Resize.getListener(scene,gc));
+		MenuBar menuBar = new MenuBar();
+	    menuBar.prefWidthProperty().bind(stage.widthProperty());
+	    root.setTop(menuBar);
 
-	    WindowContent.drawNodes(gc,nodes);
-	    WindowContent.drawPaths(gc,paths);
+	    GridPane middlePane = new GridPane();
+	    root.setCenter(middlePane);
+	    Pane drawPane = new Pane();
+		middlePane.add(drawPane,1,1);
+
+	    Menu displayMenu = new Menu("Display");
+	    menuBar.getMenus().add(displayMenu);
+
+		Sort.makeSortMenu(drawPane);
+	    displayMenu.getItems().add(sortMenu);
 
 	    stage.show();
-	}
 
+	    menuBarHeight = menuBar.getHeight();
+
+		titleLabel = new Label("");
+		mainLabel = new Label("");
+		drawPane.getChildren().addAll(titleLabel,mainLabel);
+
+	    scene.heightProperty().addListener(Resize.getListener(scene,drawPane));
+	    scene.widthProperty().addListener(Resize.getListener(scene,drawPane));
+
+	    WindowContent.drawAll(drawPane,nodes,paths);
+	}
 }
