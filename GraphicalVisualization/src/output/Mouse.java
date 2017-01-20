@@ -560,6 +560,9 @@ public class Mouse {
 		        		removeCircleListeners();
 		        		removeArcPolygonListeners();
 
+		        		circle.setRadius(2*WindowContent.defaultCircleRadius);
+			        	circle.setStrokeWidth(2*WindowContent.defaultCircleWidth);
+			        	
 		        		clickedstate = true;
 		        	}
 
@@ -663,6 +666,7 @@ public class Mouse {
 		        	{
 		        		removeCircleListeners();
 		        		removeArcPolygonListeners();
+		        		emphasizePath(pathno,arccounter);
 
 		        		clickedstate = true;
 		        	}
@@ -714,6 +718,7 @@ public class Mouse {
 		        	{
 		        		removeCircleListeners();
 		        		removeArcPolygonListeners();
+		        		emphasizePath(pathno,arccounter);
 
 		        		clickedstate = true;
 		        	}

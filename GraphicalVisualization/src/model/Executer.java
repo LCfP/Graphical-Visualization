@@ -1,6 +1,5 @@
 package model;
 import input.Input;
-import output.Resize;
 import output.Sort;
 import output.WindowContent;
 
@@ -93,8 +92,8 @@ public class Executer extends Application
 		mainLabel = new Label("");
 		drawPane.getChildren().addAll(titleLabel,mainLabel);
 
-	    scene.heightProperty().addListener(Resize.getListener(scene,drawPane));
-	    scene.widthProperty().addListener(Resize.getListener(scene,drawPane));
+	    scene.heightProperty().addListener(WindowContent.getResizeListener(scene,drawPane));
+	    scene.widthProperty().addListener(WindowContent.getResizeListener(scene,drawPane));
 
 	    WindowContent.drawAll(drawPane,nodes,paths);
 	}

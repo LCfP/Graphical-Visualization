@@ -6,6 +6,8 @@ import model.Executer;
 
 import java.util.ArrayList;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
@@ -62,13 +64,13 @@ public class WindowContent
 		}
 
 		if(Executer.attributeName.equals(""))
-		{		
+		{
 			Label allLabel = new Label("All paths");
-			
+
 			Coordinates.adjustVirtualCoordinates(nodes,1,1,1);
 			WindowContent.updateOtherSizes();
 			drawNodes(drawPane,nodes);
-						
+
 			allLabel.setFont(new Font(Math.min(defaultWidth/30,defaultHeight/20)));
 			allLabel.setLayoutX(0.2*defaultWidth);
 			allLabel.setLayoutY(Executer.menuBarHeight);
@@ -94,7 +96,7 @@ public class WindowContent
 			Coordinates.adjustVirtualCoordinates(Executer.nodes,noOfScreensX,noOfScreensY,noOfAttributes);
 			WindowContent.updateOtherSizes();
 			drawNodes(drawPane,nodes);
-			
+
 			for(int i=0;i<noOfAttributes;i++)
 			{
 				labels[i] = new Label(Executer.attributeName+" = "+attributes.get(i));
@@ -163,6 +165,29 @@ public class WindowContent
         }
 
     	Executer.nodecircles = circles;
+	}
+
+	public static ChangeListener<? super Number> getResizeListener(Scene scene,Pane drawPane)
+	{
+		final ChangeListener<Number> listener = new ChangeListener<Number>()
+		{
+
+			//Resets the canvas sizes and redraws the nodes and paths
+			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
+
+				WindowContent.updateDefaultSizes(scene);
+
+				drawPane.getChildren().clear();
+
+				Executer.titleLabel = new Label("");
+				Executer.mainLabel = new Label("");
+				drawPane.getChildren().addAll(Executer.titleLabel,Executer.mainLabel);
+				WindowContent.drawAll(drawPane, Executer.nodes, Executer.paths);
+			}
+
+		};
+
+		return listener;
 	}
 
 	public static int[] inventColor(int index)
