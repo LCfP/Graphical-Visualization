@@ -8,17 +8,21 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
-import model.Edge;
 import model.Executer;
 import model.Node;
 import model.Path;
 
 public class Mouse {
 	private static boolean clickedstate = false;
+	private static boolean nodeclicked = false;
+	private static boolean pathclicked = false;
+	private static int[] nodeindex;
+	private static int pathindex;
 
-	public static int getNodeNo(Circle circle)
+	private static int getNodeNo(Circle circle)
 	{
     	int noOfNodes = Executer.nodes.size();
     	int noOfScreensX = WindowContent.noOfScreensX;
@@ -55,45 +59,25 @@ public class Mouse {
     	return(nodeno);
 	}
 
-	public static int[] getPathNo(Arc arc)
+	private static int getPathNo(Arc arc)
 	{
 		int pathno = - 1;
-		int arccounter = 0;
-		int[] returnvalues = new int[2];
+		Arc[][] arcs = Executer.edgearcs;
 		int noOfPaths = Executer.paths.size();
 		int noOfEdges;
-		int noOfScreensX = WindowContent.noOfScreensX;
-		int noOfScreensY = WindowContent.noOfScreensY;
-		Arc[][][] arcs = Executer.edgearcs;
 
     	for(int i=0;i<noOfPaths;i++)
     	{
-    		noOfEdges = Executer.paths.get(i).getEdges().size();
+    		noOfEdges = arcs[i].length;
+
     		for(int j=0;j<noOfEdges;j++)
     		{
-    			for(int x=0;x<noOfScreensX;x++)
-	            {
-	            	for(int y=0;y<noOfScreensY;y++)
-	                {
-	            		try
-	            		{
-			            	if(arc.equals(arcs[arccounter+j][x][y]))
-			            	{
-			            		pathno = i;
-			            		break;
-			            	}
-	            		}
-	            		catch(NullPointerException e){}
-	                }
-	            }
+    			if(arcs[i][j].equals(arc))
+    			{
+    				pathno = i;
+    				break;
+    			}
     		}
-
-    		if(pathno != -1)
-    		{
-    			break;
-    		}
-
-    		arccounter += noOfEdges;
         }
 
     	if(pathno == -1)
@@ -102,51 +86,40 @@ public class Mouse {
         	System.exit(0);
         }
 
-    	returnvalues[0] = pathno;
-    	returnvalues[1] = arccounter;
-
-    	return(returnvalues);
+    	return(pathno);
 	}
 
-	public static int[] getPathNo(Polygon polygon)
+	private static int getPathNo(Polygon polygon)
 	{
 		int pathno = - 1;
-		int arccounter = 0;
-		int[] returnvalues = new int[2];
+		Polygon[][] linepolygons = Executer.linearrowpolygons;
+		Polygon[][] arcpolygons = Executer.arrowpolygons;
 		int noOfPaths = Executer.paths.size();
 		int noOfEdges;
-		int noOfScreensX = WindowContent.noOfScreensX;
-		int noOfScreensY = WindowContent.noOfScreensY;
-		Polygon[][][] polygons = Executer.arrowpolygons;
 
     	for(int i=0;i<noOfPaths;i++)
     	{
-    		noOfEdges = Executer.paths.get(i).getEdges().size();
+    		noOfEdges = linepolygons[i].length;
+
     		for(int j=0;j<noOfEdges;j++)
     		{
-    			for(int x=0;x<noOfScreensX;x++)
-	            {
-	            	for(int y=0;y<noOfScreensY;y++)
-	                {
-	            		try
-	            		{
-			            	if(polygon.equals(polygons[arccounter+j][x][y]))
-			            	{
-			            		pathno = i;
-			            		break;
-			            	}
-	            		}
-	            		catch(NullPointerException e){}
-	                }
-	            }
+    			if(linepolygons[i][j].equals(polygon))
+    			{
+    				pathno = i;
+    				break;
+    			}
     		}
 
-    		if(pathno != -1)
+    		noOfEdges = arcpolygons[i].length;
+
+    		for(int j=0;j<noOfEdges;j++)
     		{
-    			break;
+    			if(arcpolygons[i][j].equals(polygon))
+    			{
+    				pathno = i;
+    				break;
+    			}
     		}
-
-    		arccounter += noOfEdges;
         }
 
     	if(pathno == -1)
@@ -155,13 +128,40 @@ public class Mouse {
         	System.exit(0);
         }
 
-    	returnvalues[0] = pathno;
-    	returnvalues[1] = arccounter;
-
-    	return(returnvalues);
+    	return(pathno);
 	}
 
-	public static void addCircleListeners(Pane drawPane)
+	private static int getPathNo(Line line)
+	{
+		int pathno = - 1;
+		Line[][] lines = Executer.edgelines;
+		int noOfPaths = Executer.paths.size();
+		int noOfEdges;
+
+    	for(int i=0;i<noOfPaths;i++)
+    	{
+    		noOfEdges = lines[i].length;
+
+    		for(int j=0;j<noOfEdges;j++)
+    		{
+    			if(lines[i][j].equals(line))
+    			{
+    				pathno = i;
+    				break;
+    			}
+    		}
+        }
+
+    	if(pathno == -1)
+        {
+        	System.out.println("Error: could not find path");
+        	System.exit(0);
+        }
+
+    	return(pathno);
+	}
+
+	private static void addCircleListeners(Pane drawPane)
 	{
 		int noOfScreensX = WindowContent.noOfScreensX;
 		int noOfScreensY = WindowContent.noOfScreensY;
@@ -185,7 +185,7 @@ public class Mouse {
         }
 	}
 
-	public static void removeCircleListeners()
+	private static void removeCircleListeners()
 	{
 		int noOfScreensX = WindowContent.noOfScreensX;
 		int noOfScreensY = WindowContent.noOfScreensY;
@@ -209,173 +209,236 @@ public class Mouse {
         }
 	}
 
-	public static void addArcPolygonListeners(Pane drawPane)
+	private static void addArcAndPolygonListeners(Pane drawPane)
 	{
-		Arc arc;
-		Polygon polygon;
-		ArrayList<Edge> edges;
+		Arc[][] arcs = Executer.edgearcs;
+		Line[][] lines = Executer.edgelines;
+		Polygon[][] linearrows = Executer.linearrowpolygons;
+		Polygon[][] arcarrows = Executer.arrowpolygons;
+
 		int noOfPaths = Executer.paths.size();
-		int noOfScreensX = WindowContent.noOfScreensX;
-		int noOfScreensY = WindowContent.noOfScreensY;
-		int arccounter = 0;
+		int noOfEdges;
 
 		for(int i=0;i<noOfPaths;i++)
 		{
-			edges = Executer.paths.get(i).getEdges();
-			for(int j=0;j<edges.size();j++)
+			noOfEdges = arcs[i].length;
+
+			for(int j=0;j<noOfEdges;j++)
 			{
-	            for(int x=0;x<noOfScreensX;x++)
-	            {
-	            	for(int y=0;y<noOfScreensY;y++)
-	                {
-	            		try
-	            		{
-	        				arc = Executer.edgearcs[arccounter+j][x][y];
-		    	        	arc.setOnMouseEntered(MouseOnEdgeEnter(drawPane));
-		    	        	arc.setOnMouseExited(MouseOnEdgeExit(drawPane));
-		    	        	polygon = Executer.arrowpolygons[arccounter+j][x][y];
-		    	        	polygon.setOnMouseEntered(MouseOnArrowEnter(drawPane));
-		    	        	polygon.setOnMouseExited(MouseOnEdgeExit(drawPane));
-	        			}
-		        		catch(NullPointerException e){}
-	                }
-	            }
+				arcs[i][j].setOnMouseEntered(MouseOnEdgeEnter(drawPane));
+				arcs[i][j].setOnMouseExited(MouseOnEdgeExit(drawPane));
+				arcarrows[i][j].setOnMouseEntered(MouseOnArrowEnter(drawPane));
+				arcarrows[i][j].setOnMouseExited(MouseOnEdgeExit(drawPane));
 			}
 
-			arccounter += edges.size();
+			noOfEdges = lines[i].length;
+
+			for(int j=0;j<noOfEdges;j++)
+			{
+				lines[i][j].setOnMouseEntered(MouseOnLineEnter(drawPane));
+				lines[i][j].setOnMouseExited(MouseOnEdgeExit(drawPane));
+				linearrows[i][j].setOnMouseEntered(MouseOnArrowEnter(drawPane));
+				linearrows[i][j].setOnMouseExited(MouseOnEdgeExit(drawPane));
+			}
 		}
 	}
 
-	public static void removeArcPolygonListeners()
+	private static void removeArcAndPolygonListeners()
 	{
-		Arc arc;
-		Polygon polygon;
-		ArrayList<Edge> edges;
+		Arc[][] arcs = Executer.edgearcs;
+		Line[][] lines = Executer.edgelines;
+		Polygon[][] linearrows = Executer.linearrowpolygons;
+		Polygon[][] arcarrows = Executer.arrowpolygons;
+
 		int noOfPaths = Executer.paths.size();
-		int noOfScreensX = WindowContent.noOfScreensX;
-		int noOfScreensY = WindowContent.noOfScreensY;
-		int arccounter = 0;
+		int noOfEdges;
 
 		for(int i=0;i<noOfPaths;i++)
 		{
-			edges = Executer.paths.get(i).getEdges();
-			for(int j=0;j<edges.size();j++)
+			noOfEdges = arcs[i].length;
+
+			for(int j=0;j<noOfEdges;j++)
 			{
-	            for(int x=0;x<noOfScreensX;x++)
-	            {
-	            	for(int y=0;y<noOfScreensY;y++)
-	                {
-	            		try
-	            		{
-	        				arc = Executer.edgearcs[arccounter+j][x][y];
-		    	        	arc.setOnMouseEntered(null);
-		    	        	arc.setOnMouseExited(null);
-		    	        	polygon = Executer.arrowpolygons[arccounter+j][x][y];
-		    	        	polygon.setOnMouseEntered(null);
-		    	        	polygon.setOnMouseExited(null);
-	        			}
-		        		catch(NullPointerException e){}
-	                }
-	            }
+				arcs[i][j].setOnMouseEntered(null);
+				arcs[i][j].setOnMouseExited(null);
+				arcarrows[i][j].setOnMouseEntered(null);
+				arcarrows[i][j].setOnMouseExited(null);
 			}
 
-			arccounter += edges.size();
+			noOfEdges = lines[i].length;
+
+			for(int j=0;j<noOfEdges;j++)
+			{
+				lines[i][j].setOnMouseEntered(null);
+				lines[i][j].setOnMouseExited(null);
+				linearrows[i][j].setOnMouseEntered(null);
+				linearrows[i][j].setOnMouseExited(null);
+			}
 		}
 	}
 
-	public static void emphasizePath(int pathno,int arccounter)
+	private static void emphasizePath(int pathno)
 	{
-		int noOfScreensX = WindowContent.noOfScreensX;
-		int noOfScreensY = WindowContent.noOfScreensY;
-		int noOfEdges = Executer.paths.get(pathno).getEdges().size();
 		Arc arc;
-		Polygon polygon;
+		Line line;
+		Polygon linepolygon;
+		Polygon arcpolygon;
+		int noOfEdges = Executer.edgearcs[pathno].length;
+		double[][] arrowcoordinates = new double[3][2];
 
         for(int i=0;i<noOfEdges;i++)
         {
-			for(int x=0;x<noOfScreensX;x++)
-            {
-            	for(int y=0;y<noOfScreensY;y++)
-                {
-            		try
-            		{
-    	            	arc = (Arc) (Executer.edgearcs[arccounter+i][x][y]);
-    	            	arc.setStrokeWidth(4*WindowContent.defaultArcWidth);
-    	            	polygon = (Polygon) (Executer.arrowpolygons[arccounter+i][x][y]);
-    	            	polygon.getPoints().set(2,arc.getCenterX()+(arc.getRadiusX()+2*WindowContent.defaultArrowWidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
-    	            	polygon.getPoints().set(3,arc.getCenterY()-(arc.getRadiusX()+2*WindowContent.defaultArrowWidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
-    	            	polygon.getPoints().set(4,arc.getCenterX()+(arc.getRadiusX()-2*WindowContent.defaultArrowWidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
-    	            	polygon.getPoints().set(5,arc.getCenterY()-(arc.getRadiusX()-2*WindowContent.defaultArrowWidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
-            		}
-            		catch(NullPointerException e){}
-	            }
-            }
-        }
-	}
+        	arc = Executer.edgearcs[pathno][i];
+        	arc.setStrokeWidth(4*WindowContent.defaultArcWidth);
+        	arcpolygon = Executer.arrowpolygons[pathno][i];
+        	arcpolygon.getPoints().set(2,arc.getCenterX()+(arc.getRadiusX()+2*WindowContent.defaultArrowWidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+        	arcpolygon.getPoints().set(3,arc.getCenterY()-(arc.getRadiusX()+2*WindowContent.defaultArrowWidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+        	arcpolygon.getPoints().set(4,arc.getCenterX()+(arc.getRadiusX()-2*WindowContent.defaultArrowWidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+        	arcpolygon.getPoints().set(5,arc.getCenterY()-(arc.getRadiusX()-2*WindowContent.defaultArrowWidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+		}
 
-	public static void resetCircles()
-	{
-		int noOfScreensX = WindowContent.noOfScreensX;
-		int noOfScreensY = WindowContent.noOfScreensY;
-		int noOfNodes = Executer.nodes.size();
-		Circle[][][] circles = Executer.nodecircles;
+        noOfEdges = Executer.edgelines[pathno].length;
 
-		for(int i=0;i<noOfNodes;i++)
-		{
-            for(int x=0;x<noOfScreensX;x++)
-            {
-            	for(int y=0;y<noOfScreensY;y++)
-                {
-            		try
-            		{
-	            		circles[i][x][y].setRadius(WindowContent.defaultCircleRadius);
-	            		circles[i][x][y].setStrokeWidth(WindowContent.defaultCircleWidth);
-            		}
-            		catch(NullPointerException e){}
-                }
-            }
+        for(int i=0;i<noOfEdges;i++)
+        {
+        	line = Executer.edgelines[pathno][i];
+        	line.setStrokeWidth(4*WindowContent.defaultArcWidth);
+        	linepolygon = Executer.linearrowpolygons[pathno][i];
+
+        	arrowcoordinates[0][0] = 0.5 * (linepolygon.getPoints().get(2) + linepolygon.getPoints().get(4));
+        	arrowcoordinates[0][1] = 0.5 * (linepolygon.getPoints().get(3) + linepolygon.getPoints().get(5));
+        	arrowcoordinates[1][0] = arrowcoordinates[0][0] - linepolygon.getPoints().get(0);
+        	arrowcoordinates[1][1] = arrowcoordinates[0][1] - linepolygon.getPoints().get(1);
+        	arrowcoordinates[2][0] = -arrowcoordinates[1][1];
+        	arrowcoordinates[2][1] = arrowcoordinates[1][0];
+
+        	linepolygon.getPoints().set(2,arrowcoordinates[0][0] + 2 * arrowcoordinates[2][0] * Math.tan(Math.toRadians(25)));
+        	linepolygon.getPoints().set(3,arrowcoordinates[0][1] + 2 * arrowcoordinates[2][1] * Math.tan(Math.toRadians(25)));
+        	linepolygon.getPoints().set(4,arrowcoordinates[0][0] - 2 * arrowcoordinates[2][0] * Math.tan(Math.toRadians(25)));
+        	linepolygon.getPoints().set(5,arrowcoordinates[0][1] - 2 * arrowcoordinates[2][1] * Math.tan(Math.toRadians(25)));
 		}
 	}
 
-	public static void resetArcsPolygons()
+	private static void resetCircle()
+	{
+		Circle[][][] circles = Executer.nodecircles;
+		int alength = circles.length; 
+		int blength;
+		int clength; 
+		
+		if(nodeclicked)
+		{
+			Executer.nodecircles[nodeindex[0]][nodeindex[1]][nodeindex[2]].setRadius(WindowContent.defaultCircleRadius);
+			Executer.nodecircles[nodeindex[0]][nodeindex[1]][nodeindex[2]].setStrokeWidth(WindowContent.defaultCircleWidth);
+		}
+		else
+		{
+			for(int a=0;a<alength;a++)
+			{
+				blength = circles[a].length;
+				
+				for(int b=0;b<blength;b++)
+				{
+					clength = circles[a][b].length;
+					
+					for(int c=0;c<clength;c++)
+					{
+						Executer.nodecircles[a][b][c].setRadius(WindowContent.defaultCircleRadius);
+						Executer.nodecircles[a][b][c].setStrokeWidth(WindowContent.defaultCircleWidth);
+					}
+				}
+			}
+		}
+	}
+
+	private static void resetArcsAndPolygons()
 	{
 		Arc arc;
-		Polygon polygon;
-		ArrayList<Edge> edges;
+		Line line;
+		Polygon linepolygon;
+		Polygon arcpolygon;
+		double[][] arrowcoordinates = new double[3][2];
 		int noOfPaths = Executer.paths.size();
-		int noOfScreensX = WindowContent.noOfScreensX;
-		int noOfScreensY = WindowContent.noOfScreensY;
-		int arccounter = 0;
-
-		for(int i=0;i<noOfPaths;i++)
+		int noOfEdges;
+		
+		if(pathclicked)
 		{
-			edges = Executer.paths.get(i).getEdges();
-			for(int j=0;j<edges.size();j++)
-    		{
-				for(int x=0;x<noOfScreensX;x++)
-	            {
-	            	for(int y=0;y<noOfScreensY;y++)
-	                {
-	            		try
-	            		{
-		            		arc = Executer.edgearcs[arccounter+j][x][y];
-		            		arc.setStrokeWidth(WindowContent.defaultArcWidth);
-		            		polygon = Executer.arrowpolygons[arccounter+j][x][y];
-		            		polygon.getPoints().set(2,arc.getCenterX()+(arc.getRadiusX()+WindowContent.defaultArrowWidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
-		            		polygon.getPoints().set(3,arc.getCenterY()-(arc.getRadiusX()+WindowContent.defaultArrowWidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
-		            		polygon.getPoints().set(4,arc.getCenterX()+(arc.getRadiusX()-WindowContent.defaultArrowWidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
-		            		polygon.getPoints().set(5,arc.getCenterY()-(arc.getRadiusX()-WindowContent.defaultArrowWidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
-	            		}
-	            		catch(NullPointerException e){}
-	            	}
-	            }
-    		}
+			noOfEdges = Executer.edgearcs[pathindex].length;
+			
+			for(int i=0;i<noOfEdges;i++)
+			{
+				arc = Executer.edgearcs[pathindex][i];
+        		arc.setStrokeWidth(WindowContent.defaultArcWidth);
+        		arcpolygon = Executer.arrowpolygons[pathindex][i];
+        		arcpolygon.getPoints().set(2,arc.getCenterX()+(arc.getRadiusX()+WindowContent.defaultArrowWidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+        		arcpolygon.getPoints().set(3,arc.getCenterY()-(arc.getRadiusX()+WindowContent.defaultArrowWidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+        		arcpolygon.getPoints().set(4,arc.getCenterX()+(arc.getRadiusX()-WindowContent.defaultArrowWidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+        		arcpolygon.getPoints().set(5,arc.getCenterY()-(arc.getRadiusX()-WindowContent.defaultArrowWidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+			}
 
-			arccounter += edges.size();
+			noOfEdges = Executer.edgelines[pathindex].length;
+
+			for(int i=0;i<noOfEdges;i++)
+			{
+				line = Executer.edgelines[pathindex][i];
+        		line.setStrokeWidth(WindowContent.defaultArcWidth);
+        		linepolygon = Executer.linearrowpolygons[pathindex][i];
+
+        	   	arrowcoordinates[0][0] = 0.5 * (linepolygon.getPoints().get(2) + linepolygon.getPoints().get(4));
+            	arrowcoordinates[0][1] = 0.5 * (linepolygon.getPoints().get(3) + linepolygon.getPoints().get(5));
+            	arrowcoordinates[1][0] = arrowcoordinates[0][0] - linepolygon.getPoints().get(0);
+            	arrowcoordinates[1][1] = arrowcoordinates[0][1] - linepolygon.getPoints().get(1);
+            	arrowcoordinates[2][0] = -arrowcoordinates[1][1];
+            	arrowcoordinates[2][1] = arrowcoordinates[1][0];
+
+            	linepolygon.getPoints().set(2,arrowcoordinates[0][0] + arrowcoordinates[2][0] * Math.tan(Math.toRadians(25)));
+            	linepolygon.getPoints().set(3,arrowcoordinates[0][1] + arrowcoordinates[2][1] * Math.tan(Math.toRadians(25)));
+            	linepolygon.getPoints().set(4,arrowcoordinates[0][0] - arrowcoordinates[2][0] * Math.tan(Math.toRadians(25)));
+            	linepolygon.getPoints().set(5,arrowcoordinates[0][1] - arrowcoordinates[2][1] * Math.tan(Math.toRadians(25)));
+    		}
+		}
+		else
+		{
+			for(int j=0;j<noOfPaths;j++)
+			{		
+				noOfEdges = Executer.edgearcs[j].length;
+
+				for(int i=0;i<noOfEdges;i++)
+				{
+					arc = Executer.edgearcs[j][i];
+	        		arc.setStrokeWidth(WindowContent.defaultArcWidth);
+	        		arcpolygon = Executer.arrowpolygons[j][i];
+	        		arcpolygon.getPoints().set(2,arc.getCenterX()+(arc.getRadiusX()+WindowContent.defaultArrowWidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+	        		arcpolygon.getPoints().set(3,arc.getCenterY()-(arc.getRadiusX()+WindowContent.defaultArrowWidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+	        		arcpolygon.getPoints().set(4,arc.getCenterX()+(arc.getRadiusX()-WindowContent.defaultArrowWidth)*Math.cos(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+	        		arcpolygon.getPoints().set(5,arc.getCenterY()-(arc.getRadiusX()-WindowContent.defaultArrowWidth)*Math.sin(Math.toRadians(arc.getStartAngle()+0.67*arc.getLength())));
+				}
+
+				noOfEdges = Executer.edgelines[j].length;
+
+				for(int i=0;i<noOfEdges;i++)
+				{
+					line = Executer.edgelines[j][i];
+	        		line.setStrokeWidth(WindowContent.defaultArcWidth);
+	        		linepolygon = Executer.linearrowpolygons[j][i];
+
+	        	   	arrowcoordinates[0][0] = 0.5 * (linepolygon.getPoints().get(2) + linepolygon.getPoints().get(4));
+	            	arrowcoordinates[0][1] = 0.5 * (linepolygon.getPoints().get(3) + linepolygon.getPoints().get(5));
+	            	arrowcoordinates[1][0] = arrowcoordinates[0][0] - linepolygon.getPoints().get(0);
+	            	arrowcoordinates[1][1] = arrowcoordinates[0][1] - linepolygon.getPoints().get(1);
+	            	arrowcoordinates[2][0] = -arrowcoordinates[1][1];
+	            	arrowcoordinates[2][1] = arrowcoordinates[1][0];
+
+	            	linepolygon.getPoints().set(2,arrowcoordinates[0][0] + arrowcoordinates[2][0] * Math.tan(Math.toRadians(25)));
+	            	linepolygon.getPoints().set(3,arrowcoordinates[0][1] + arrowcoordinates[2][1] * Math.tan(Math.toRadians(25)));
+	            	linepolygon.getPoints().set(4,arrowcoordinates[0][0] - arrowcoordinates[2][0] * Math.tan(Math.toRadians(25)));
+	            	linepolygon.getPoints().set(5,arrowcoordinates[0][1] - arrowcoordinates[2][1] * Math.tan(Math.toRadians(25)));
+	    		}
+			}
 		}
 	}
 
-	public static void printNodeText(int nodeno){
+	private static void printNodeText(int nodeno){
     	Node node = Executer.nodes.get(nodeno);
     	ArrayList<String> attributeNames = node.getAttributeNames();
     	ArrayList<String> attributes = node.getAttributes();
@@ -383,72 +446,139 @@ public class Mouse {
     	Label Title = Executer.titleLabel;
     	Label Main = Executer.mainLabel;
     	String maintext;
-    	
+
     	maintext = "No: "+node.getNumber()+"\nCoordinates:\n("
-	        	+node.getRealXcoordinate()+","+node.getRealYcoordinate()+")\n";
-    	
+	        	+node.getXcoordinate()+","+node.getYcoordinate()+")\n";
+
     	for(int i=0;i<noOfAttributes;i++)
     	{
     		maintext = maintext +"\n"+ attributeNames.get(i) +": "+ attributes.get(i);
     	}
 
     	Title.setText("Node");
-    	Title.setFont(new Font(Math.min(WindowContent.defaultWidth/30,WindowContent.defaultHeight/20)));
-    	Title.setLayoutX(0.07*WindowContent.defaultWidth);
-    	Title.setLayoutY(0.03*WindowContent.defaultHeight+Executer.menuBarHeight);
-    	
+    	Title.setFont(new Font(WindowContent.titleLabelSize));
+    	Title.setLayoutX(0.03*WindowContent.defaultWidth);
+    	Title.setLayoutY(0.1*WindowContent.defaultHeight);
+
     	Main.setText(maintext);
-    	Main.setMaxWidth(0.18*WindowContent.defaultWidth);
-    	Main.setMaxHeight(0.85*WindowContent.defaultHeight-Executer.menuBarHeight);
-    	Main.setFont(new Font(Math.min(WindowContent.defaultWidth/60,WindowContent.defaultHeight/40)));
-    	Main.setLayoutX(0.02*WindowContent.defaultWidth);
-    	Main.setLayoutY(0.15*WindowContent.defaultHeight+Executer.menuBarHeight);
+    	Main.setFont(new Font(WindowContent.mainLabelSize));
+    	Main.setLayoutX(0.01*WindowContent.defaultWidth);
+    	Main.setLayoutY(0.15*WindowContent.defaultHeight);
 	}
 
-	public static void printPathText(int pathno)
+	private static void printPathText(int pathno)
 	{
     	Label Title = Executer.titleLabel;
     	Label Main = Executer.mainLabel;
         String maintext = "";
-        Edge edge;
         Path path = Executer.paths.get(pathno);
-    	ArrayList<String> attributeNames = path.getAttributeNames();
-    	ArrayList<String> attributes = path.getAttributes();
-    	int noOfAttributes = attributeNames.size();
-    	ArrayList<String> edgeAttributeNames = path.getEdges().get(0).getAttributeNames();
-    	ArrayList<String> edgeAttributes;
+        ArrayList<Node[]> nodes = path.getNodes();
+    	ArrayList<String> pathAttributeNames = Executer.pathAttributeNames;
+    	ArrayList<String> pathAttributes = path.getPathAttributes();
+    	int noOfPathAttributes = pathAttributeNames.size();
+    	ArrayList<String> edgeAttributeNames = Executer.edgeAttributeNames;
+    	ArrayList<String[]> edgeAttributes = path.getEdgeAttributes();
+    	int noOfEdges = edgeAttributes.size();
     	int noOfEdgeAttributes = edgeAttributeNames.size();
-    
-    	for(int i=0;i<noOfAttributes;i++)
+
+    	for(int i=0;i<noOfPathAttributes;i++)
     	{
-    		maintext = maintext + attributeNames.get(i) +": "+ attributes.get(i) +"\n";
+    		maintext = maintext + pathAttributeNames.get(i) +": "+ pathAttributes.get(i) +"\n";
     	}
-    	
+
     	maintext = maintext + "\nRoutes:";
-    	
-        for(int i=0;i<path.getEdges().size();i++)
+
+        for(int i=0;i<noOfEdges;i++)
         {
-        	edge = path.getEdges().get(i);
-        	maintext = maintext +"\n"+ edge.getNode1().getNumber()+"-"+edge.getNode2().getNumber() +"\n";
-        	edgeAttributes = edge.getAttributes();
-        	
+        	maintext = maintext +"\n"+ nodes.get(i)[0].getNumber()+"-"+nodes.get(i)[1].getNumber() +"\n";
+
         	for(int j=0;j<noOfEdgeAttributes;j++)
         	{
-        		maintext = maintext + edgeAttributeNames.get(j) +": "+ edgeAttributes.get(j) +"\n";
+        		maintext = maintext + edgeAttributeNames.get(j) +": "+ edgeAttributes.get(i)[j] +"\n";
         	}
         }
-        
+
     	Title.setText("Path");
-    	Title.setFont(new Font(Math.min(WindowContent.defaultWidth/30,WindowContent.defaultHeight/20)));
-    	Title.setLayoutX(0.07*WindowContent.defaultWidth);
-    	Title.setLayoutY(0.03*WindowContent.defaultHeight+Executer.menuBarHeight);
+    	Title.setFont(new Font(WindowContent.titleLabelSize));
+    	Title.setLayoutX(0.03*WindowContent.defaultWidth);
+    	Title.setLayoutY(0.1*WindowContent.defaultHeight);
 
     	Main.setText(maintext);
-    	Main.setMaxWidth(0.18*WindowContent.defaultWidth);
-    	Main.setMaxHeight(0.85*WindowContent.defaultHeight-Executer.menuBarHeight);
-    	Main.setFont(new Font(Math.min(WindowContent.defaultWidth/60,WindowContent.defaultHeight/40)));
-    	Main.setLayoutX(0.02*WindowContent.defaultWidth);
-    	Main.setLayoutY(0.15*WindowContent.defaultHeight+Executer.menuBarHeight);
+    	Main.setFont(new Font(WindowContent.mainLabelSize));
+    	Main.setLayoutX(0.01*WindowContent.defaultWidth);
+    	Main.setLayoutY(0.15*WindowContent.defaultHeight);
+	}
+
+	private static int[] findCircleIndex(Circle circle)
+	{
+		Circle[][][] circles = Executer.nodecircles;
+		int[] output = new int[3];
+		int alength = circles.length;
+		int blength;
+		int clength;
+
+		for(int a=0;a<alength;a++)
+		{
+			blength = circles[a].length;
+
+			for(int b=0;b<blength;b++)
+			{
+				clength = circles[a][b].length;
+
+				for(int c=0;c<clength;c++)
+				{
+					if(circle.equals(circles[a][b][c]))
+					{
+						output[0] = a;
+						output[1] = b;
+						output[2] = c;
+					}
+				}
+			}
+		}
+
+		return output;
+	}
+
+	private static void adjustState(int pathno)
+	{
+		Pane drawPane = Executer.drawPane;
+
+    	if(pathno == pathindex & clickedstate)
+    	{
+    		Executer.titleLabel.setText("");
+    		Executer.mainLabel.setText("");
+
+    		resetArcsAndPolygons();
+    		addCircleListeners(drawPane);
+    		addArcAndPolygonListeners(drawPane);
+
+        	clickedstate = false;
+        	pathclicked = false;
+        	pathindex = -1;
+    	}
+    	else if(clickedstate)
+    	{
+    		resetCircle();
+    		resetArcsAndPolygons();
+
+    		emphasizePath(pathno);
+
+    		nodeclicked = false;
+        	pathclicked = true;
+        	pathindex = pathno;
+        	nodeindex = null;
+    	}
+    	else
+    	{
+    		removeCircleListeners();
+    		removeArcAndPolygonListeners();
+    		emphasizePath(pathno);
+
+    		clickedstate = true;
+        	pathclicked = true;
+        	pathindex = pathno;
+    	}
 	}
 
 	public static EventHandler<MouseEvent> MouseOnCircleEnter(Pane drawPane){
@@ -537,37 +667,42 @@ public class Mouse {
 	        		Title.setText("");
 	        		Main.setText("");
 
-		        	circle.setRadius(WindowContent.defaultCircleRadius);
-		        	circle.setStrokeWidth(WindowContent.defaultCircleWidth);
+		        	resetCircle();
 
 		        	addCircleListeners(drawPane);
-		        	addArcPolygonListeners(drawPane);
+		        	addArcAndPolygonListeners(drawPane);
 
 		        	clickedstate = false;
+		        	nodeclicked = false;
+		        	nodeindex = null;
+	        	}
+	        	else if(clickedstate)
+	        	{
+	        		resetCircle();
+	        		resetArcsAndPolygons();
+
+		        	circle.setRadius(2*WindowContent.defaultCircleRadius);
+		        	circle.setStrokeWidth(2*WindowContent.defaultCircleWidth);
+
+		        	pathclicked = false;
+		        	nodeclicked = true;
+		        	nodeindex = findCircleIndex(circle);
+		        	pathindex = -1;
 	        	}
 	        	else
 	        	{
-		        	if(clickedstate)
-		        	{
-		        		resetCircles();
-		        		resetArcsPolygons();
+	        		removeCircleListeners();
+	        		removeArcAndPolygonListeners();
 
-			        	circle.setRadius(2*WindowContent.defaultCircleRadius);
-			        	circle.setStrokeWidth(2*WindowContent.defaultCircleWidth);
-		        	}
-		        	else
-		        	{
-		        		removeCircleListeners();
-		        		removeArcPolygonListeners();
+	        		circle.setRadius(2*WindowContent.defaultCircleRadius);
+		        	circle.setStrokeWidth(2*WindowContent.defaultCircleWidth);
 
-		        		circle.setRadius(2*WindowContent.defaultCircleRadius);
-			        	circle.setStrokeWidth(2*WindowContent.defaultCircleWidth);
-			        	
-		        		clickedstate = true;
-		        	}
-
-		        	printNodeText(nodeno);
+	        		clickedstate = true;
+		        	nodeclicked = true;
+		        	nodeindex = findCircleIndex(circle);
 	        	}
+
+	        	printNodeText(nodeno);
 	        }
 		};
 
@@ -580,12 +715,10 @@ public class Mouse {
 	        public void handle(MouseEvent t)
 	        {
 	        	Arc arc = (Arc) (t.getSource());
-	        	int[] patharcno = getPathNo(arc);
-	        	int pathno = patharcno [0];
-	        	int arccounter = patharcno[1];
+	        	int pathno = getPathNo(arc);
 
 	            printPathText(pathno);
-	            emphasizePath(pathno,arccounter);
+	            emphasizePath(pathno);
 	        }
 		};
 
@@ -600,11 +733,27 @@ public class Mouse {
 	        	Executer.titleLabel.setText("");
 	        	Executer.mainLabel.setText("");
 
-	        	resetArcsPolygons();
+	        	resetArcsAndPolygons();
 	        }
 		};
 
 		return(mouseOnEdgeExit);
+	}
+
+	public static EventHandler<MouseEvent> MouseOnLineEnter(Pane drawPane){
+		EventHandler<MouseEvent> mouseOnEdgeEnter = new EventHandler<MouseEvent>() {
+
+	        public void handle(MouseEvent t)
+	        {
+	        	Line line = (Line) (t.getSource());
+	        	int pathno = getPathNo(line);
+
+	            printPathText(pathno);
+	            emphasizePath(pathno);
+	        }
+		};
+
+		return(mouseOnEdgeEnter);
 	}
 
 	public static EventHandler<MouseEvent> MouseOnArrowEnter(Pane drawPane){
@@ -613,12 +762,10 @@ public class Mouse {
 	        public void handle(MouseEvent t)
 	        {
 	        	Polygon polygon = (Polygon) (t.getSource());
-	        	int[] patharcno = getPathNo(polygon);
-	        	int pathno = patharcno [0];
-	        	int arccounter = patharcno[1];
+	        	int pathno = getPathNo(polygon);
 
 	            printPathText(pathno);
-	            emphasizePath(pathno,arccounter);
+	            emphasizePath(pathno);
 	        }
 		};
 
@@ -631,48 +778,10 @@ public class Mouse {
 	        public void handle(MouseEvent t)
 	        {
 	        	Polygon polygon = (Polygon) t.getSource();
-	        	boolean clicked = false;
-	        	int[] patharcno = getPathNo(polygon);
-	        	int pathno = patharcno [0];
-	        	int arccounter = patharcno[1];
-	            double distance = Math.sqrt(Math.pow(polygon.getPoints().get(2)-polygon.getPoints().get(4), 2)
-	            		+Math.pow(polygon.getPoints().get(3)-polygon.getPoints().get(5), 2));
+	        	int pathno = getPathNo(polygon);
+	        	adjustState(pathno);
 
-	        	if(Math.abs(distance - 4*WindowContent.defaultArrowWidth) < 0.01)
-	        	{
-	        		clicked = true;
-	        	}
-
-	        	if(clicked&clickedstate)
-	        	{
-	        		Executer.titleLabel.setText("");
-	        		Executer.mainLabel.setText("");
-
-	        		resetArcsPolygons();
-	        		addCircleListeners(drawPane);
-	        		addArcPolygonListeners(drawPane);
-
-		        	clickedstate = false;
-	        	}
-	        	else
-	        	{
-		        	if(clickedstate)
-		        	{
-		        		resetCircles();
-		        		resetArcsPolygons();
-		        		emphasizePath(pathno,arccounter);
-		        	}
-		        	else
-		        	{
-		        		removeCircleListeners();
-		        		removeArcPolygonListeners();
-		        		emphasizePath(pathno,arccounter);
-
-		        		clickedstate = true;
-		        	}
-
-		        	printPathText(pathno);
-	        	}
+	        	printPathText(pathno);
 	        }
 		};
 
@@ -685,49 +794,29 @@ public class Mouse {
 	        public void handle(MouseEvent t)
 	        {
 	        	Arc arc = (Arc) t.getSource();
-	        	boolean clicked = false;
-	        	int[] patharcno = getPathNo(arc);
-	        	int pathno = patharcno [0];
-	        	int arccounter = patharcno[1];
+	        	int pathno = getPathNo(arc);
+	        	adjustState(pathno);
 
-	        	if(arc.getStrokeWidth()==(4*WindowContent.defaultArcWidth))
-	        	{
-	        		clicked = true;
-	        	}
-
-	        	if(clicked&clickedstate)
-	        	{
-	        		Executer.titleLabel.setText("");
-	        		Executer.mainLabel.setText("");
-
-	        		resetArcsPolygons();
-	        		addCircleListeners(drawPane);
-	        		addArcPolygonListeners(drawPane);
-
-		        	clickedstate = false;
-	        	}
-	        	else
-	        	{
-		        	if(clickedstate)
-		        	{
-		        		resetCircles();
-		        		resetArcsPolygons();
-		        		emphasizePath(pathno,arccounter);
-		        	}
-		        	else
-		        	{
-		        		removeCircleListeners();
-		        		removeArcPolygonListeners();
-		        		emphasizePath(pathno,arccounter);
-
-		        		clickedstate = true;
-		        	}
-
-		        	printPathText(pathno);
-	        	}
+	        	printPathText(pathno);
 	        }
 		};
 
 		return(mouseclickOnArc);
+	}
+
+	public static EventHandler<MouseEvent> MouseclickOnLine(Pane drawPane){
+		EventHandler<MouseEvent> mouseclickOnLine = new EventHandler<MouseEvent>() {
+
+	        public void handle(MouseEvent t)
+	        {
+	        	Line line = (Line) t.getSource();
+	        	int pathno = getPathNo(line);
+	        	adjustState(pathno);
+
+	        	printPathText(pathno);
+	        }
+		};
+
+		return(mouseclickOnLine);
 	}
 }

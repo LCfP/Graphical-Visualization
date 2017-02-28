@@ -4,63 +4,66 @@ import java.util.ArrayList;
 public class Path {
 
 	//contains an arraylist of edges
-	private ArrayList<Edge> Edges;
-	private int[] color;
+	private ArrayList<Node[]> Nodes;
 
-	//attributes of the path
-	private ArrayList<String> Attributes;
-	private ArrayList<String> AttributeNames;
+	//attributes of the path and edge
+	private ArrayList<String> PathAttributes;
+	private ArrayList<String[]> EdgeAttributes;
 
 	//creates an empty path
 	public Path()
 	{
-		Edges = new ArrayList<Edge>(0);
-		color = new int[3];
-		Attributes = new ArrayList<String>(0);
-		AttributeNames = new ArrayList<String>(0);
+		Nodes = new ArrayList<Node[]>(0);
+		PathAttributes = new ArrayList<String>(0);
+		EdgeAttributes = new ArrayList<String[]>(0);
 	}
 
 	//creates a non-empty path
-	public Path(ArrayList<Edge> edges)
+	public Path(ArrayList<Node[]> nodes)
 	{
-		Edges = edges;
-		color = new int[3];
-		Attributes = new ArrayList<String>(0);
-		AttributeNames = new ArrayList<String>(0);
+		Nodes = nodes;
+		PathAttributes = new ArrayList<String>(0);
+		EdgeAttributes = new ArrayList<String[]>(0);
 	}
 
 	//deep copy class constructor
 	public Path(Path path){
-		ArrayList<Edge> temp = path.getEdges();
-		int edgelength = temp.size();
-		int[] pathcolor = path.getColor();
-		ArrayList<String> pathAttributes = path.getAttributes();
-		ArrayList<String> pathAttributeNames = path.getAttributeNames();
-		int noOfAttributes = pathAttributes.size();
-		int noOfAttributeNames = pathAttributeNames.size();
-		Edges = new ArrayList<Edge>(0);
-		color = new int[3];
-		Attributes = new ArrayList<String>(0);
-		AttributeNames = new ArrayList<String>(0);
+		ArrayList<Node[]> temp = path.getNodes();
+		int noOfNodes = temp.size();
+		ArrayList<String> pathAttributes = path.getPathAttributes();
+		ArrayList<String[]> allEdgeAttributes = path.getEdgeAttributes();
+		int noOfPathAttributes = pathAttributes.size();
+		int noOfEdges = allEdgeAttributes.size();
+		int noOfEdgeAttributes = allEdgeAttributes.get(0).length;
+		Nodes = new ArrayList<Node[]>(0);
+		PathAttributes = new ArrayList<String>(0);
+		EdgeAttributes = new ArrayList<String[]>(0);
+		Node[] nodes = new Node[2];
+		String[] edgeAttributes;
+		String[] edgeattributes = new String[noOfEdgeAttributes];
 
-		for(int i=0;i<edgelength;i++)
+		for(int i=0;i<noOfNodes;i++)
 		{
-			Edges.add(new Edge(temp.get(i)));
+			nodes[0] = new Node(temp.get(i)[0]);
+			nodes[1] = new Node(temp.get(i)[1]);
+			Nodes.add(nodes);
 		}
 
-		for(int i=0;i<3;i++)
+		for(int i=0;i<noOfPathAttributes;i++)
 		{
-			color[i] = pathcolor[i];
+			PathAttributes.add(pathAttributes.get(i));
 		}
 
-		for(int i=0;i<noOfAttributes;i++)
+		for(int i=0;i<noOfEdges;i++)
 		{
-			Attributes.add(pathAttributes.get(i));
-		}
+			edgeAttributes = allEdgeAttributes.get(i);
 
-		for(int i=0;i<noOfAttributeNames;i++)
-		{
-			AttributeNames.add(pathAttributeNames.get(i));
+			for(int j=0;j<noOfEdgeAttributes;j++)
+			{
+				edgeattributes[j] = edgeAttributes[j];
+			}
+
+			EdgeAttributes.add(edgeattributes);
 		}
 	}
 
@@ -80,12 +83,63 @@ public class Path {
 	//equals method
 	public boolean equals(Path path)
 	{
-		int[] pathcolor = path.getColor();
-		ArrayList<String> pathAttributes = path.getAttributes();
-		ArrayList<String> pathAttributeNames = path.getAttributeNames();
+		ArrayList<String> pathAttributes = path.getPathAttributes();
+		ArrayList<String[]> edgeAttributes = path.getEdgeAttributes();
+		ArrayList<Node[]> allnodes = path.getNodes();
+		int noofnodes = Nodes.size();
+		int noofedges = EdgeAttributes.size();
+		int noofedgeattributes = EdgeAttributes.get(0).length;
+		Node[] nodes1;
+		Node[] nodes2;
+		String[] edgeattributes1;
+		String[] edgeattributes2;
 
-		if(path.getEdges().equals(Edges) & pathcolor[0] == color[0]	& pathcolor[1] == color[1]
-				& pathcolor[2] == color[2] & pathAttributes.equals(Attributes) & pathAttributeNames.equals(AttributeNames)){
+		if(allnodes.size() == noofnodes)
+		{
+			for(int i=0;i<noofnodes;i++)
+			{
+				nodes1 = allnodes.get(i);
+				nodes2 = Nodes.get(i);
+
+				if(nodes1[0] != nodes2[0] | nodes1[1] != nodes2[1])
+				{
+					return false;
+				}
+			}
+		}
+		else
+		{
+			return false;
+		}
+
+		if(edgeAttributes.size() == noofedges)
+		{
+			for(int i=0;i<noofedges;i++)
+			{
+				edgeattributes1 = edgeAttributes.get(i);
+				edgeattributes2 = EdgeAttributes.get(i);
+
+				if(edgeattributes1.length == noofedgeattributes & edgeattributes2.length == noofedgeattributes)
+				{
+					for(int j=0;j<noofedgeattributes;j++)
+					{
+						if(edgeattributes1[j] != edgeattributes2[j])
+						{
+							return false;
+						}
+					}
+				}
+				else{
+					return false;
+				}
+			}
+		}
+		else
+		{
+			return false;
+		}
+
+		if(pathAttributes.equals(PathAttributes)){
 			return true;
 		}
 		else{
@@ -93,58 +147,47 @@ public class Path {
 		}
 	}
 
-	//assigns color to path
-	public void setColor(int[] newcolor)
-	{
-		color = newcolor;
-	}
-
 	//add attribute
-	public void addAttribute(String attribute)
+	public void addPathAttribute(String attribute)
 	{
-		Attributes.add(attribute);
+		PathAttributes.add(attribute);
 	}
 
-	public void addAttributeName(String attributeName)
+	public void addEdgeAttribute(String[] attribute)
 	{
-		AttributeNames.add(attributeName);
+		EdgeAttributes.add(attribute);
 	}
 
 	//remove attributes
-	public void removeAttributes()
+	public void removePathAttributes()
 	{
-		Attributes = new ArrayList<String>(0);
+		PathAttributes = new ArrayList<String>(0);
 	}
 
-	public void removeAttributeNames()
+	public void removeEdgeAttributes()
 	{
-		AttributeNames = new ArrayList<String>(0);
+		EdgeAttributes = new ArrayList<String[]>(0);
 	}
 
 	//adds an edge
-	public void addEdge(Edge edge){
-		Edges.add(edge);
+	public void addNode(Node[] node){
+		Nodes.add(node);
 	}
 
 	//returns edges
-	public ArrayList<Edge> getEdges(){
-		return Edges;
+	public ArrayList<Node[]> getNodes(){
+		return Nodes;
 	}
 
-	//returns color
-	public int[] getColor()
+	//returns path attributes
+	public ArrayList<String> getPathAttributes()
 	{
-		return color;
+		return PathAttributes;
 	}
 
-	//returns Attributes
-	public ArrayList<String> getAttributes()
+	//returns path attributes
+	public ArrayList<String[]> getEdgeAttributes()
 	{
-		return Attributes;
-	}
-
-	public ArrayList<String> getAttributeNames()
-	{
-		return AttributeNames;
+		return EdgeAttributes;
 	}
 }

@@ -6,31 +6,27 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.Pane;
 import model.Executer;
 import model.Path;
 
 public class Sort {
 
-	public static void makeSortMenu(Pane drawPane)
+	public static Menu makeSortMenu()
 	{
-	    Path path;
 		MenuItem menuItem;
 		Menu sortMenu;
 		ArrayList<String> attributeNames;
 		int noOfAttributes;
 
-		Executer.sortMenu = new Menu("Sort by");
+		sortMenu = new Menu("Sort by");
 
-		sortMenu = Executer.sortMenu;
 		menuItem = new MenuItem("All");
 		sortMenu.getItems().add(menuItem);
-		menuItem.setOnAction(sortByAll(drawPane));
+		menuItem.setOnAction(sortByAll());
 
 	    if(Executer.paths.size()>0)
 	    {
-	    	path = Executer.paths.get(0);
-	    	attributeNames = path.getAttributeNames();
+	    	attributeNames = Executer.pathAttributeNames;
 	    	noOfAttributes = attributeNames.size();
 
 	    	if(noOfAttributes>0)
@@ -39,35 +35,37 @@ public class Sort {
 	    		{
 		    		menuItem = new MenuItem(attributeNames.get(i));
 		    		sortMenu.getItems().add(menuItem);
-		    		menuItem.setOnAction(sortBy(drawPane));
+		    		menuItem.setOnAction(sortBy());
 	    		}
 	    	}
 	    }
+
+	    return sortMenu;
 	}
 
-	public static EventHandler<ActionEvent> sortByAll(Pane drawPane)
+	public static EventHandler<ActionEvent> sortByAll()
 	{
 		EventHandler<ActionEvent> sortClick = new EventHandler<ActionEvent>()
 		{
 			public void handle(ActionEvent a)
 			{
-				Executer.attributeName = "";
-				WindowContent.drawAll(drawPane,Executer.nodes,Executer.paths);
+				Executer.sortingAttribute = "";
+				WindowContent.drawAll();
 			}
 		};
 
 		return(sortClick);
 	}
 
-	public static EventHandler<ActionEvent> sortBy(Pane drawPane)
+	public static EventHandler<ActionEvent> sortBy()
 	{
 		EventHandler<ActionEvent> sortClick = new EventHandler<ActionEvent>()
 		{
 			public void handle(ActionEvent a)
 			{
 					MenuItem menuItem = (MenuItem) (a.getSource());
-					Executer.attributeName = menuItem.getText();
-					WindowContent.drawAll(drawPane,Executer.nodes,Executer.paths);
+					Executer.sortingAttribute = menuItem.getText();
+					WindowContent.drawAll();
 			}
 		};
 
@@ -77,8 +75,7 @@ public class Sort {
 	public static int getAttributeNo(String attributeName)
 	{
 		int attributeNo =-1;
-		Path path = Executer.paths.get(0);
-		ArrayList<String> attributeNames = path.getAttributeNames();
+		ArrayList<String> attributeNames = Executer.pathAttributeNames;
 		int noOfAttributes = attributeNames.size();
 
 		for(int i=0;i<noOfAttributes;i++)
@@ -99,11 +96,11 @@ public class Sort {
 		ArrayList<Path> paths = Executer.paths;
 		String attribute;
 		int noOfPaths = paths.size();
-		int attributeNo = paths.get(0).getAttributeNames().indexOf(attributeName);
+		int attributeNo = Executer.pathAttributeNames.indexOf(attributeName);
 
 		for(int i=0;i<noOfPaths;i++)
 		{
-			attribute = paths.get(i).getAttributes().get(attributeNo);
+			attribute = paths.get(i).getPathAttributes().get(attributeNo);
 			if(!attributes.contains(attribute))
 			{
 				attributes.add(attribute);

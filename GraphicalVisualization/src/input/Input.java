@@ -5,7 +5,6 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import model.Edge;
 import model.Executer;
 import model.Node;
 import model.Path;
@@ -82,8 +81,8 @@ public class Input {
 					}
 					outputLine = outputLine + Attributes.get(noOfAttributes-1) +")";
 					outputLine = outputLine + " " + node.getNumber() + " ";
-					outputLine = outputLine + node.getRealXcoordinate() + ",";
-					outputLine = outputLine + node.getRealYcoordinate();
+					outputLine = outputLine + node.getXcoordinate() + ",";
+					outputLine = outputLine + node.getYcoordinate();
 
 					System.out.println(outputLine);
 				}
@@ -94,8 +93,8 @@ public class Input {
 
 				for(int i=0;i<(Nodes.size());i++)
 				{
-					System.out.printf("%d %s,%s\n",Nodes.get(i).getNumber(),Nodes.get(i).getRealXcoordinate()
-							,Nodes.get(i).getRealYcoordinate());
+					System.out.printf("%d %s,%s\n",Nodes.get(i).getNumber(),Nodes.get(i).getXcoordinate()
+							,Nodes.get(i).getYcoordinate());
 				}
 			}
 		}
@@ -103,28 +102,26 @@ public class Input {
 
 	//Output the paths to the screen
 	public static void printPaths(ArrayList<Path> Paths)
-	{
+	{		
 		String Outputpath;
 		int noOfPathAttributes;
 		int noOfEdgeAttributes;
-		ArrayList<Edge> OutputEdges = new ArrayList<Edge>(0);
 		ArrayList<String> attributeNames;
 		ArrayList<String> attributes;
+		ArrayList<Node[]> OutputEdges;
 		Path path;
-		Edge edge;
 
 		System.out.println("");
 
 		if(Paths.size()>0)
 		{
 			path = Paths.get(0);
-			edge = path.getEdges().get(0);
-			noOfPathAttributes = path.getAttributes().size();
-			noOfEdgeAttributes = edge.getAttributes().size();
+			noOfPathAttributes = Executer.pathAttributeNames.size();
+			noOfEdgeAttributes = Executer.edgeAttributeNames.size();
 
 			if(noOfPathAttributes > 0)
 			{
-				attributeNames = path.getAttributeNames();
+				attributeNames = Executer.pathAttributeNames;
 				Outputpath = "(";
 
 				if(noOfPathAttributes>1)
@@ -140,7 +137,7 @@ public class Input {
 
 				if(noOfEdgeAttributes > 0)
 				{
-					attributeNames = edge.getAttributeNames();
+					attributeNames = Executer.edgeAttributeNames;
 					Outputpath = Outputpath + "(";
 
 					if(noOfEdgeAttributes>1)
@@ -153,15 +150,15 @@ public class Input {
 
 					Outputpath = Outputpath + attributeNames.get(noOfEdgeAttributes-1) +")";
 				}
-				
+
 				Outputpath = Outputpath + ":";
 				System.out.println(Outputpath);
 
 				for(int i=0;i<(Paths.size());i++)
 				{
 					path = Paths.get(i);
-					OutputEdges = path.getEdges();
-					attributes = path.getAttributes();
+					attributes = path.getPathAttributes();
+					OutputEdges = path.getNodes();
 					Outputpath = "(";
 
 					if(noOfPathAttributes>1)
@@ -178,10 +175,10 @@ public class Input {
 					{
 						for(int j=0;j<OutputEdges.size();j++)
 						{
-							attributes = OutputEdges.get(j).getAttributes();
-							Outputpath = Outputpath + OutputEdges.get(j).getNode1().getNumber() +"-"+OutputEdges.get(j).getNode2().getNumber()+" ";
+							attributes = convertToArrayList(path.getEdgeAttributes().get(j));
+							Outputpath = Outputpath + OutputEdges.get(j)[0].getNumber() +"-"+OutputEdges.get(j)[1].getNumber() +" ";
 							Outputpath = Outputpath + "(";
-							
+
 							if(noOfEdgeAttributes>1)
 							{
 								for(int k=0;k<(noOfEdgeAttributes-1);k++)
@@ -197,7 +194,7 @@ public class Input {
 					{
 						for(int j=0;j<OutputEdges.size();j++)
 						{
-							Outputpath = Outputpath + OutputEdges.get(j).getNode1().getNumber() +"-"+OutputEdges.get(j).getNode2().getNumber()+" ";
+							Outputpath = Outputpath + OutputEdges.get(j)[0].getNumber() +"-"+OutputEdges.get(j)[1].getNumber() +" ";
 						}
 					}
 
@@ -211,11 +208,11 @@ public class Input {
 				for(int i=0;i<(Paths.size());i++)
 				{
 					path = Paths.get(i);
-					OutputEdges = path.getEdges();
+					OutputEdges = path.getNodes();
 
 					for(int j=0;j<OutputEdges.size();j++)
 					{
-						Outputpath = OutputEdges.get(j).getNode1().getNumber() +"-"+OutputEdges.get(j).getNode2().getNumber()+" ";
+						Outputpath = OutputEdges.get(j)[0].getNumber() +"-"+OutputEdges.get(j)[1].getNumber() +" ";
 						System.out.printf("%s",Outputpath);
 					}
 					System.out.println("");
@@ -229,7 +226,7 @@ public class Input {
 		ArrayList<String> Attributes = new ArrayList<String>(0);
 		String[] lineSplit;
 		int noOfAttributes;
-
+		string = string.substring(1,string.length()-1);
 
 		if(string.contains(","))
 		{
@@ -256,7 +253,7 @@ public class Input {
 
 			if(string.equals(""))
 			{
-				Input.FileNotCompatible("empty attribute name");
+				Input.FileNotCompatible("empty attribute (name)");
 			}
 			else
 			{
@@ -266,6 +263,32 @@ public class Input {
 		}
 
 		return(Attributes);
+	}
+
+	public static String[] convertToArray(ArrayList<String> input)
+	{
+		int length = input.size();
+		String[] output = new String[length];
+
+		for(int i=0;i<length;i++)
+		{
+			output[i] = input.get(i);
+		}
+
+		return output;
+	}
+
+	public static ArrayList<String> convertToArrayList(String[] input)
+	{
+		int length = input.length;
+		ArrayList<String> output = new ArrayList<String>(0);
+
+		for(int i=0;i<length;i++)
+		{
+			output.add(input[i]);
+		}
+
+		return output;
 	}
 
 	public static void FileNotCompatible(String message)

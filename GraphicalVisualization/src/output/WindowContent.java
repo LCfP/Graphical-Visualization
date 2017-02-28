@@ -14,6 +14,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 
@@ -25,10 +26,17 @@ public class WindowContent
 
 	public static int noOfScreensX = 1;
 	public static int noOfScreensY = 1;
-	public static double defaultCircleRadius = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/120;
-	public static double defaultCircleWidth = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/200;
-	public static double defaultArrowWidth = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/120;
-	public static double defaultArcWidth = Math.min(defaultHeight/noOfScreensY,defaultWidth/noOfScreensX)/400;
+
+	public static double graphwidth = 0.7;
+
+	public static double defaultCircleRadius = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/120;
+	public static double defaultCircleWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/200;
+	public static double defaultArrowWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/120;
+	public static double defaultArcWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/400;
+
+	public static double graphLabelSize = Math.min(graphwidth*defaultWidth/noOfScreensX,defaultHeight/noOfScreensY)/20;
+	public static double titleLabelSize = Math.min(graphwidth*defaultWidth,WindowContent.defaultHeight)/40;
+	public static double mainLabelSize = Math.min(graphwidth*defaultWidth,WindowContent.defaultHeight)/60;
 
 	public static void updateDefaultSizes(Scene scene)
 	{
@@ -39,107 +47,88 @@ public class WindowContent
 
 	public static void updateOtherSizes()
 	{
-		noOfScreensX = Executer.nodes.get(0).getVirtualXcoordinates().length;
-		noOfScreensY = Executer.nodes.get(0).getVirtualXcoordinates()[0].length;
-		defaultCircleRadius = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/120;
-		defaultCircleWidth = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/200;
-		defaultArrowWidth = Math.min(defaultHeight/noOfScreensY, 0.8*defaultWidth/noOfScreensX)/120;
-		defaultArcWidth = Math.min(defaultHeight/noOfScreensY,defaultWidth/noOfScreensX)/400;
+		defaultCircleRadius = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/120;
+		defaultCircleWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/200;
+		defaultArrowWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/120;
+		defaultArcWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/400;
+		graphLabelSize = Math.min(graphwidth*defaultWidth/noOfScreensX,defaultHeight/noOfScreensY)/20;
+		titleLabelSize = Math.min(graphwidth*WindowContent.defaultWidth,WindowContent.defaultHeight)/40;
+		mainLabelSize = Math.min(graphwidth*WindowContent.defaultWidth,WindowContent.defaultHeight)/60;
 	}
 
 	//Draw all elements on the canvas
-	public static void drawAll(Pane drawPane,ArrayList<Node> nodes,ArrayList<Path> paths)
+	public static void drawAll()
 	{
-		Path path;
 		ArrayList<String> attributes;
-		int count = 0;
 		int attributeNo;
 		int noOfAttributes;
-		int noOfPaths = paths.size();
-        int edgecounter = 0;
+        Pane drawPane = Executer.drawPane;
+        Label[] labels;
+        double[] screenmeasures;
+        String sortingAttribute = Executer.sortingAttribute;
 
-		for(int i=0;i<paths.size();i++)
+        drawPane.getChildren().clear();
+
+		if(sortingAttribute.equals(""))
 		{
-			edgecounter += paths.get(i).getEdges().size();
-		}
+			attributes = null;
+			attributeNo = -1;
+			noOfAttributes = 1;
 
-		if(Executer.attributeName.equals(""))
-		{
-			Label allLabel = new Label("All paths");
+			noOfScreensX = 1;
+			noOfScreensY = 1;
 
-			Coordinates.adjustVirtualCoordinates(nodes,1,1,1);
 			WindowContent.updateOtherSizes();
-			drawNodes(drawPane,nodes);
 
-			allLabel.setFont(new Font(Math.min(defaultWidth/30,defaultHeight/20)));
-			allLabel.setLayoutX(0.2*defaultWidth);
-			allLabel.setLayoutY(Executer.menuBarHeight);
-			drawPane.getChildren().add(allLabel);
-
-			Executer.edgearcs = new Arc[edgecounter][1][1];
-			Executer.arrowpolygons = new Polygon[edgecounter][1][1];
-
-	        for(int i=0;i<noOfPaths;i++)
-	        {
-	        	count += ArcDraw.drawArcs(drawPane,count,paths.get(i),0,0);
-	        }
+			labels = new Label[1];
+			labels[0] = new Label(" All paths");
+			labels[0].setFont(new Font(graphLabelSize));
+			labels[0].setLayoutX(0);
+			labels[0].setLayoutY(0);
+			drawPane.getChildren().add(labels[0]);
 		}
 		else
 		{
-			attributes = Sort.getDistinctAttributes(Executer.attributeName);
-			attributeNo = Sort.getAttributeNo(Executer.attributeName);
+			attributes = Sort.getDistinctAttributes(sortingAttribute);
+			attributeNo = Sort.getAttributeNo(sortingAttribute);
 			noOfAttributes = attributes.size();
+			labels = new Label[noOfAttributes];
+
 			noOfScreensX = (int) (Math.sqrt(noOfAttributes - 1)+1);
 			noOfScreensY = (int) ((noOfAttributes - 1) / noOfScreensX + 1);
-			Label[] labels = new Label[noOfAttributes];
 
-			Coordinates.adjustVirtualCoordinates(Executer.nodes,noOfScreensX,noOfScreensY,noOfAttributes);
 			WindowContent.updateOtherSizes();
-			drawNodes(drawPane,nodes);
+
+			screenmeasures = getScreenMeasures();
 
 			for(int i=0;i<noOfAttributes;i++)
 			{
-				labels[i] = new Label(Executer.attributeName+" = "+attributes.get(i));
-				labels[i].setFont(new Font(Math.min(defaultWidth/30/noOfScreensX,defaultHeight/20/noOfScreensY)));
-				labels[i].setLayoutX(0.2*defaultWidth+(i%noOfScreensX)*0.8*defaultWidth/noOfScreensX);
-				labels[i].setLayoutY(Executer.menuBarHeight+(i/noOfScreensY)*(defaultHeight-Executer.menuBarHeight)/noOfScreensY);
+				labels[i] = new Label(" " + sortingAttribute + " = " + attributes.get(i));
+				labels[i].setFont(new Font(graphLabelSize));
+				labels[i].setLayoutX((i%noOfScreensX)*screenmeasures[0]);
+				labels[i].setLayoutY((i/noOfScreensX)*screenmeasures[1]);
 				drawPane.getChildren().add(labels[i]);
 			}
-
-			Executer.edgearcs = new Arc[edgecounter][noOfScreensX][noOfScreensY];
-			Executer.arrowpolygons = new Polygon[edgecounter][noOfScreensX][noOfScreensY];
-
-			for(int j=0;j<noOfPaths;j++)
-			{
-				for(int i=0;i<noOfAttributes;i++)
-				{
-					path = paths.get(j);
-
-					if(path.getAttributes().get(attributeNo).equals(attributes.get(i)))
-					{
-						count += ArcDraw.drawArcs(drawPane,count,path,i%noOfScreensX,i/noOfScreensX);
-					}
-				}
-			}
 		}
+
+		drawNodes(noOfAttributes);
+		drawPaths(noOfAttributes,attributeNo,attributes);
 	}
 
-
 	//Draws all nodes as red circles
-	public static void drawNodes(Pane drawPane,ArrayList<Node> nodes)
+	private static void drawNodes(int noOfScreens)
 	{
-		int noOfScreens = nodes.get(0).noOfVirtualCoordinates();
+		Pane drawPane = Executer.drawPane;
+		ArrayList<Node> nodes = Executer.nodes;
 		int NoNodes = nodes.size();
-		double[][][][] virtualcoordinates = Coordinates.getVirtualCoordinates(nodes);
-		int noOfScreensX = virtualcoordinates[0][0].length;
-		int noOfScreensY = virtualcoordinates[0][0][0].length;
+		double[][] coordinates = Executer.normalizedCoordinates;
+        double[] screenmeasures = getScreenMeasures();
+        double initX;
+        double initY;
 		Circle[][][] circles = new Circle[NoNodes][noOfScreensX][noOfScreensY];
 
-		drawPane.getChildren().clear();
 		Executer.titleLabel.setText("");
 		Executer.mainLabel.setText("");
-		drawPane.getChildren().add(Executer.titleLabel);
-		drawPane.getChildren().add(Executer.mainLabel);
 
         for(int x=0;x<noOfScreensX;x++)
         {
@@ -149,7 +138,11 @@ public class WindowContent
         		{
                     for(int i=0;i<NoNodes;i++)
                     {
-                    	circles[i][x][y] = new Circle(virtualcoordinates[0][i][x][y],virtualcoordinates[1][i][x][y],defaultCircleRadius);
+                        initX = x*screenmeasures[0];
+                        initY = y*screenmeasures[1];
+
+                    	circles[i][x][y] = new Circle(initX+screenmeasures[0]*coordinates[0][i],initY+
+                    			screenmeasures[1]*coordinates[1][i],defaultCircleRadius);
                     	circles[i][x][y].setFill(Color.WHITE);
                     	circles[i][x][y].setStrokeWidth(defaultCircleWidth);
 
@@ -167,7 +160,39 @@ public class WindowContent
     	Executer.nodecircles = circles;
 	}
 
-	public static ChangeListener<? super Number> getResizeListener(Scene scene,Pane drawPane)
+	private static void drawPaths(int noOfAttributes,int attributeNo,ArrayList<String> attributes)
+	{
+		ArrayList<Path> paths = Executer.paths;
+		ArrayList<Node> nodes = Executer.nodes;
+		int noOfPaths = paths.size();
+		int noOfNodes = nodes.size();
+		int[][][] edgeCount = new int[noOfAttributes][noOfNodes][noOfNodes];
+		Path path;
+
+		Executer.edgearcs = new Arc[noOfPaths][];
+		Executer.arrowpolygons = new Polygon[noOfPaths][];
+		Executer.edgelines = new Line[noOfPaths][];
+		Executer.linearrowpolygons = new Polygon[noOfPaths][];
+
+		for(int j=0;j<noOfPaths;j++)
+		{
+			path = paths.get(j);
+
+			for(int i=0;i<noOfAttributes;i++)
+			{
+				if(noOfAttributes == 1)
+				{
+					edgeCount[i] = ArcDraw.drawArcs(path,i,edgeCount[i]);
+				}
+				else if(path.getPathAttributes().get(attributeNo).equals(attributes.get(i)))
+				{
+					edgeCount[i] = ArcDraw.drawArcs(path,i,edgeCount[i]);
+				}
+			}
+		}
+	}
+
+	public static ChangeListener<? super Number> getResizeListener(Scene scene)
 	{
 		final ChangeListener<Number> listener = new ChangeListener<Number>()
 		{
@@ -177,17 +202,30 @@ public class WindowContent
 
 				WindowContent.updateDefaultSizes(scene);
 
-				drawPane.getChildren().clear();
-
+				Executer.drawPane.getChildren().clear();
+				Executer.leftPane.setPrefWidth(0.15*WindowContent.defaultWidth);
+				Executer.rightPane.setPrefWidth(0.15*WindowContent.defaultWidth);
 				Executer.titleLabel = new Label("");
 				Executer.mainLabel = new Label("");
-				drawPane.getChildren().addAll(Executer.titleLabel,Executer.mainLabel);
-				WindowContent.drawAll(drawPane, Executer.nodes, Executer.paths);
+				WindowContent.drawAll();
 			}
 
 		};
 
 		return listener;
+	}
+
+	public static int[][] createColors(ArrayList<Path> paths)
+	{
+		int noOfPaths = paths.size();
+		int[][] colors = new int[noOfPaths][3];
+
+		for(int i=0;i<noOfPaths;i++)
+		{
+			colors[i] = inventColor(i);
+		}
+
+		return colors;
 	}
 
 	public static int[] inventColor(int index)
@@ -213,5 +251,16 @@ public class WindowContent
 		color[2] = (int) ((Math.pow(256,3) + pixel) % 256);
 
 		return color;
+	}
+
+	public static double[] getScreenMeasures()
+	{
+		double[] measures = new double[2];
+		measures[0] = Math.min(graphwidth*WindowContent.defaultWidth/noOfScreensX,
+        		(WindowContent.defaultHeight - Executer.menuBarHeight)/noOfScreensY/Executer.aspectratio);
+        measures[1] = Math.min(graphwidth*WindowContent.defaultWidth/noOfScreensX*Executer.aspectratio,
+        		(WindowContent.defaultHeight - Executer.menuBarHeight)/noOfScreensY);
+
+        return measures;
 	}
 }
