@@ -50,7 +50,7 @@ public class Sort {
 			public void handle(ActionEvent a)
 			{
 				Executer.sortingAttribute = "";
-				WindowContent.drawAll();
+				Graph.drawAll();
 			}
 		};
 
@@ -65,7 +65,7 @@ public class Sort {
 			{
 					MenuItem menuItem = (MenuItem) (a.getSource());
 					Executer.sortingAttribute = menuItem.getText();
-					WindowContent.drawAll();
+					Graph.drawAll();
 			}
 		};
 

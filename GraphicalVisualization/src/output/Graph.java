@@ -1,6 +1,8 @@
 package output;
 
 import model.Path;
+import user.CheckPaths;
+import user.Mouse;
 import model.Node;
 import model.Executer;
 
@@ -18,7 +20,7 @@ import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import javafx.scene.text.Font;
 
-public class WindowContent
+public class Graph
 {
 	//default screensizes
 	public static double defaultWidth = 1200;
@@ -35,8 +37,8 @@ public class WindowContent
 	public static double defaultArcWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/400;
 
 	public static double graphLabelSize = Math.min(graphwidth*defaultWidth/noOfScreensX,defaultHeight/noOfScreensY)/20;
-	public static double titleLabelSize = Math.min(graphwidth*defaultWidth,WindowContent.defaultHeight)/40;
-	public static double mainLabelSize = Math.min(graphwidth*defaultWidth,WindowContent.defaultHeight)/60;
+	public static double titleLabelSize = Math.min(graphwidth*defaultWidth,Graph.defaultHeight)/40;
+	public static double mainLabelSize = Math.min(graphwidth*defaultWidth,Graph.defaultHeight)/60;
 
 	public static void updateDefaultSizes(Scene scene)
 	{
@@ -52,8 +54,14 @@ public class WindowContent
 		defaultArrowWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/120;
 		defaultArcWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/400;
 		graphLabelSize = Math.min(graphwidth*defaultWidth/noOfScreensX,defaultHeight/noOfScreensY)/20;
-		titleLabelSize = Math.min(graphwidth*WindowContent.defaultWidth,WindowContent.defaultHeight)/40;
-		mainLabelSize = Math.min(graphwidth*WindowContent.defaultWidth,WindowContent.defaultHeight)/60;
+		titleLabelSize = Math.min(graphwidth*defaultWidth,defaultHeight)/40;
+		mainLabelSize = Math.min(graphwidth*defaultWidth,defaultHeight)/60;
+		Executer.titleLabel.setFont(new Font(titleLabelSize));
+		Executer.titleLabel.setLayoutX(0.03*defaultWidth);
+		Executer.titleLabel.setLayoutY(0.05*defaultHeight);
+		Executer.mainLabel.setFont(new Font(mainLabelSize));
+		Executer.mainLabel.setLayoutX(0.01*defaultWidth);
+		Executer.mainLabel.setLayoutY(0.1*defaultHeight);
 	}
 
 	//Draw all elements on the canvas
@@ -78,7 +86,7 @@ public class WindowContent
 			noOfScreensX = 1;
 			noOfScreensY = 1;
 
-			WindowContent.updateOtherSizes();
+			Graph.updateOtherSizes();
 
 			labels = new Label[1];
 			labels[0] = new Label(" All paths");
@@ -97,7 +105,7 @@ public class WindowContent
 			noOfScreensX = (int) (Math.sqrt(noOfAttributes - 1)+1);
 			noOfScreensY = (int) ((noOfAttributes - 1) / noOfScreensX + 1);
 
-			WindowContent.updateOtherSizes();
+			Graph.updateOtherSizes();
 
 			screenmeasures = getScreenMeasures();
 
@@ -112,7 +120,8 @@ public class WindowContent
 		}
 
 		drawNodes(noOfAttributes);
-		drawPaths(noOfAttributes,attributeNo,attributes);
+		CheckPaths.createCheckboxes();
+		//drawPaths(noOfAttributes,attributeNo,attributes);
 	}
 
 	//Draws all nodes as red circles
@@ -146,9 +155,9 @@ public class WindowContent
                     	circles[i][x][y].setFill(Color.WHITE);
                     	circles[i][x][y].setStrokeWidth(defaultCircleWidth);
 
-                    	circles[i][x][y].setOnMouseEntered(Mouse.MouseOnCircleEnter(drawPane));
-                    	circles[i][x][y].setOnMouseExited(Mouse.MouseOnCircleExit(drawPane));
-                    	circles[i][x][y].setOnMouseClicked(Mouse.MouseclickOnCircle(drawPane));
+                    	circles[i][x][y].setOnMouseEntered(Mouse.MouseOnCircleEnter());
+                    	circles[i][x][y].setOnMouseExited(Mouse.MouseOnCircleExit());
+                    	circles[i][x][y].setOnMouseClicked(Mouse.MouseclickOnCircle());
                     	circles[i][x][y].setStroke(Color.RED);
 
                     	drawPane.getChildren().add(circles[i][x][y]);
@@ -200,14 +209,12 @@ public class WindowContent
 			//Resets the canvas sizes and redraws the nodes and paths
 			public void changed(ObservableValue<? extends Number> arg0, Number arg1, Number arg2) {
 
-				WindowContent.updateDefaultSizes(scene);
+				Graph.updateDefaultSizes(scene);
 
 				Executer.drawPane.getChildren().clear();
-				Executer.leftPane.setPrefWidth(0.15*WindowContent.defaultWidth);
-				Executer.rightPane.setPrefWidth(0.15*WindowContent.defaultWidth);
-				Executer.titleLabel = new Label("");
-				Executer.mainLabel = new Label("");
-				WindowContent.drawAll();
+				Executer.leftPane.setPrefWidth(0.5*(1-graphwidth)*defaultWidth);
+				Executer.rightPane.setPrefWidth(0.5*(1-graphwidth)*defaultWidth);
+				Graph.drawAll();
 			}
 
 		};
@@ -256,10 +263,10 @@ public class WindowContent
 	public static double[] getScreenMeasures()
 	{
 		double[] measures = new double[2];
-		measures[0] = Math.min(graphwidth*WindowContent.defaultWidth/noOfScreensX,
-        		(WindowContent.defaultHeight - Executer.menuBarHeight)/noOfScreensY/Executer.aspectratio);
-        measures[1] = Math.min(graphwidth*WindowContent.defaultWidth/noOfScreensX*Executer.aspectratio,
-        		(WindowContent.defaultHeight - Executer.menuBarHeight)/noOfScreensY);
+		measures[0] = Math.min(graphwidth*Graph.defaultWidth/noOfScreensX,
+        		(Graph.defaultHeight - Executer.menuBarHeight)/noOfScreensY/Executer.aspectratio);
+        measures[1] = Math.min(graphwidth*Graph.defaultWidth/noOfScreensX*Executer.aspectratio,
+        		(Graph.defaultHeight - Executer.menuBarHeight)/noOfScreensY);
 
         return measures;
 	}

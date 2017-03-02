@@ -2,7 +2,7 @@ package model;
 import input.Input;
 import output.Coordinates;
 import output.Sort;
-import output.WindowContent;
+import output.Graph;
 
 import java.util.ArrayList;
 
@@ -79,7 +79,7 @@ public class Executer extends Application
 		Coordinates.calculateNormalizedCoordinates(nodes);
 
 		//Create unique colors for each path
-		pathColors = WindowContent.createColors(paths);
+		pathColors = Graph.createColors(paths);
 
 		//Creating a window object
 		launch(args);
@@ -91,16 +91,17 @@ public class Executer extends Application
 
 	    BorderPane root = new BorderPane();
 
-		Scene scene = new Scene(root,WindowContent.defaultWidth,WindowContent.defaultHeight);
+		Scene scene = new Scene(root,Graph.defaultWidth,Graph.defaultHeight);
 		stage.setScene(scene);
 
 		titleLabel = new Label("");
 		mainLabel = new Label("");
+		
 		Pane textPane = new Pane();
 		textPane.getChildren().addAll(titleLabel,mainLabel);
 
 		leftPane = new ScrollPane();
-		leftPane.setPrefWidth(0.15*WindowContent.defaultWidth);
+		leftPane.setPrefWidth(0.5*(1-Graph.graphwidth)*Graph.defaultWidth);
 		leftPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		leftPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		leftPane.setContent(textPane);
@@ -112,7 +113,7 @@ public class Executer extends Application
 		middlePane.setContent(drawPane);
 
 		rightPane = new ScrollPane();
-		rightPane.setPrefWidth(0.15*WindowContent.defaultWidth);
+		rightPane.setPrefWidth(0.5*(1-Graph.graphwidth)*Graph.defaultWidth);
 		rightPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		rightPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 
@@ -132,9 +133,9 @@ public class Executer extends Application
 
 	    menuBarHeight = menuBar.getHeight();
 
-	    scene.heightProperty().addListener(WindowContent.getResizeListener(scene));
-	    scene.widthProperty().addListener(WindowContent.getResizeListener(scene));
+	    scene.heightProperty().addListener(Graph.getResizeListener(scene));
+	    scene.widthProperty().addListener(Graph.getResizeListener(scene));
 
-	    WindowContent.drawAll();
+	    Graph.drawAll();
 	}
 }

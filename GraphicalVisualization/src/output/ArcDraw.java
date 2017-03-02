@@ -10,6 +10,7 @@ import javafx.scene.shape.Polygon;
 import model.Executer;
 import model.Node;
 import model.Path;
+import user.Mouse;
 
 public class ArcDraw
 {
@@ -32,9 +33,9 @@ public class ArcDraw
 		ArrayList<Arc> arcs = new ArrayList<Arc>(0);
 		ArrayList<Polygon> arcpolygons = new ArrayList<Polygon>(0);
 
-        double[] measures = WindowContent.getScreenMeasures();
-        double initX = measures[0] * (screenNo%WindowContent.noOfScreensX);
-        double initY = measures[1] * (screenNo/WindowContent.noOfScreensX);
+        double[] measures = Graph.getScreenMeasures();
+        double initX = measures[0] * (screenNo%Graph.noOfScreensX);
+        double initY = measures[1] * (screenNo/Graph.noOfScreensX);
 
 
 
@@ -109,7 +110,6 @@ public class ArcDraw
 
 	private static Line createStraightArc(int[] color,double x1,double x2,double y1,double y2)
 	{
-		Pane drawPane = Executer.drawPane;
 		Line line = new Line();
 
 		line.setStartX(x1);
@@ -118,17 +118,16 @@ public class ArcDraw
 		line.setEndY(y2);
 		line.setFill(null);
 		line.setStroke(Color.rgb(color[0],color[1],color[2]));
-		line.setStrokeWidth(WindowContent.defaultArcWidth);
-		line.setOnMouseEntered(Mouse.MouseOnLineEnter(drawPane));
-		line.setOnMouseExited(Mouse.MouseOnEdgeExit(drawPane));
-		line.setOnMouseClicked(Mouse.MouseclickOnLine(drawPane));
+		line.setStrokeWidth(Graph.defaultArcWidth);
+		line.setOnMouseEntered(Mouse.MouseOnLineEnter());
+		line.setOnMouseExited(Mouse.MouseOnLineExit());
+		line.setOnMouseClicked(Mouse.MouseclickOnLine());
 
 		return line;
 	}
 
 	private static Polygon createLinePolygon(int[] color,double x1,double x2,double y1,double y2)
 	{
-		Pane drawPane = Executer.drawPane;
 		Polygon polygon;
 		double[] arrowcoordinates = new double[6];
 		double arrowangle = Math.toRadians(25);
@@ -173,16 +172,15 @@ public class ArcDraw
 
 		polygon = new Polygon(arrowcoordinates);
 		polygon.setFill(Color.rgb(color[0],color[1],color[2]));
-		polygon.setOnMouseEntered(Mouse.MouseOnArrowEnter(drawPane));
-		polygon.setOnMouseExited(Mouse.MouseOnEdgeExit(drawPane));
-		polygon.setOnMouseClicked(Mouse.MouseclickOnArrow(drawPane));
+		polygon.setOnMouseEntered(Mouse.MouseOnArrowEnter());
+		polygon.setOnMouseExited(Mouse.MouseOnArrowExit());
+		polygon.setOnMouseClicked(Mouse.MouseclickOnArrow());
 
 		return polygon;
 	}
 
 	private static Arc createCircleArc(int count,int[] color,double x1,double x2,double y1,double y2,int mode)
 	{
-		Pane drawPane = Executer.drawPane;
 		Arc arc;
 		double[] arcpars = getCircleArcParameters(count,x1,x2,y1,y2,mode);
 
@@ -190,23 +188,22 @@ public class ArcDraw
 		arc.setType(ArcType.OPEN);
 		arc.setFill(null);
 		arc.setStroke(Color.rgb(color[0],color[1],color[2]));
-		arc.setStrokeWidth(WindowContent.defaultArcWidth);
-		arc.setOnMouseEntered(Mouse.MouseOnEdgeEnter(drawPane));
-		arc.setOnMouseExited(Mouse.MouseOnEdgeExit(drawPane));
-		arc.setOnMouseClicked(Mouse.MouseclickOnEdge(drawPane));
+		arc.setStrokeWidth(Graph.defaultArcWidth);
+		arc.setOnMouseEntered(Mouse.MouseOnEdgeEnter());
+		arc.setOnMouseExited(Mouse.MouseOnEdgeExit());
+		arc.setOnMouseClicked(Mouse.MouseclickOnEdge());
 
 		return arc;
 	}
 
 	private static Polygon createArcPolygon(int count,int[] color,double x1,double x2,double y1,double y2,int mode)
 	{
-		Pane drawPane = Executer.drawPane;
 		Polygon polygon;
 		double[] arcpars = getCircleArcParameters(count,x1,x2,y1,y2,mode);
 
 		//arrow parameters
 		double[]arrowcoordinates = new double[6];
-		double arrowwidth = WindowContent.defaultArrowWidth;
+		double arrowwidth = Graph.defaultArrowWidth;
 
 		arrowcoordinates[0] = arcpars[4]+arcpars[2]*Math.cos(Math.toRadians(arcpars[3]-180+0.7*2*arcpars[0]));
 		arrowcoordinates[1] = arcpars[5]-arcpars[2]*Math.sin(Math.toRadians(arcpars[3]-180+0.7*2*arcpars[0]));
@@ -217,9 +214,9 @@ public class ArcDraw
 
 		polygon = new Polygon(arrowcoordinates);
 		polygon.setFill(Color.rgb(color[0],color[1],color[2]));
-		polygon.setOnMouseEntered(Mouse.MouseOnArrowEnter(drawPane));
-		polygon.setOnMouseExited(Mouse.MouseOnEdgeExit(drawPane));
-		polygon.setOnMouseClicked(Mouse.MouseclickOnArrow(drawPane));
+		polygon.setOnMouseEntered(Mouse.MouseOnArrowEnter());
+		polygon.setOnMouseExited(Mouse.MouseOnArrowExit());
+		polygon.setOnMouseClicked(Mouse.MouseclickOnArrow());
 
 		return polygon;
 	}
