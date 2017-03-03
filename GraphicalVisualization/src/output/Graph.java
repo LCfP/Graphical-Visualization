@@ -1,8 +1,8 @@
 package output;
 
 import model.Path;
-import user.CheckPaths;
 import user.Mouse;
+import user.Sort;
 import model.Node;
 import model.Executer;
 
@@ -120,8 +120,7 @@ public class Graph
 		}
 
 		drawNodes(noOfAttributes);
-		CheckPaths.createCheckboxes();
-		//drawPaths(noOfAttributes,attributeNo,attributes);
+		makePaths(noOfAttributes,attributeNo,attributes);
 	}
 
 	//Draws all nodes as red circles
@@ -169,7 +168,7 @@ public class Graph
     	Executer.nodecircles = circles;
 	}
 
-	private static void drawPaths(int noOfAttributes,int attributeNo,ArrayList<String> attributes)
+	private static void makePaths(int noOfAttributes,int attributeNo,ArrayList<String> attributes)
 	{
 		ArrayList<Path> paths = Executer.paths;
 		ArrayList<Node> nodes = Executer.nodes;
@@ -191,11 +190,11 @@ public class Graph
 			{
 				if(noOfAttributes == 1)
 				{
-					edgeCount[i] = ArcDraw.drawArcs(path,i,edgeCount[i]);
+					edgeCount[i] = ArcDraw.makeArcs(path,i,edgeCount[i]);
 				}
 				else if(path.getPathAttributes().get(attributeNo).equals(attributes.get(i)))
 				{
-					edgeCount[i] = ArcDraw.drawArcs(path,i,edgeCount[i]);
+					edgeCount[i] = ArcDraw.makeArcs(path,i,edgeCount[i]);
 				}
 			}
 		}

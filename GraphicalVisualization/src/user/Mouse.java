@@ -252,7 +252,6 @@ public class Mouse {
 		int noOfPaths = Executer.paths.size();
 		int noOfEdges;
 
-		System.out.println(noOfPaths);
 		for(int i=0;i<noOfPaths;i++)
 		{
 			noOfEdges = arcs[i].length;

@@ -1,8 +1,9 @@
 package model;
 import input.Input;
 import output.Coordinates;
-import output.Sort;
 import output.Graph;
+import user.ControlPaths;
+import user.Sort;
 
 import java.util.ArrayList;
 
@@ -116,6 +117,8 @@ public class Executer extends Application
 		rightPane.setPrefWidth(0.5*(1-Graph.graphwidth)*Graph.defaultWidth);
 		rightPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		rightPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+
+		ControlPaths.createCheckboxes();
 
 		MenuBar menuBar = new MenuBar();
 	    Menu displayMenu = new Menu("Display");

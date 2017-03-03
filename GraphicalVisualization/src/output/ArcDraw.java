@@ -10,13 +10,14 @@ import javafx.scene.shape.Polygon;
 import model.Executer;
 import model.Node;
 import model.Path;
+import user.ControlPaths;
 import user.Mouse;
 
 public class ArcDraw
 {
 
 	//method that draws circle arcs between nodes
-	public static int[][] drawArcs(Path path,int screenNo,int[][] edgeCount)
+	public static int[][] makeArcs(Path path,int screenNo,int[][] edgeCount)
 	{
 		ArrayList<Node[]> nodes = path.getNodes();
 		int pathindex = Executer.paths.indexOf(path);
@@ -36,8 +37,6 @@ public class ArcDraw
         double[] measures = Graph.getScreenMeasures();
         double initX = measures[0] * (screenNo%Graph.noOfScreensX);
         double initY = measures[1] * (screenNo/Graph.noOfScreensX);
-
-
 
         for(int i=0;i<NoOfEdges;i++)
         {
@@ -295,9 +294,9 @@ public class ArcDraw
 
 	private static void incorporateShapes(int pathindex,ArrayList<Line> lines,ArrayList<Arc> arcs,ArrayList<Polygon> linepolygons,ArrayList<Polygon> arcpolygons)
 	{
+		Pane drawPane = Executer.drawPane;
 		int noOfLines = lines.size();
 		int noOfArcs = arcs.size();
-		Pane drawPane = Executer.drawPane;
 
 		Executer.edgelines[pathindex] = new Line[noOfLines];
 		Executer.edgearcs[pathindex] = new Arc[noOfArcs];
@@ -308,14 +307,22 @@ public class ArcDraw
 		{
 			Executer.edgelines[pathindex][i] = lines.get(i);
 			Executer.linearrowpolygons[pathindex][i] = linepolygons.get(i);
-			drawPane.getChildren().addAll(Executer.edgelines[pathindex][i],Executer.linearrowpolygons[pathindex][i]);
+
+			if(ControlPaths.checkboxes[pathindex+2].isSelected())
+			{
+				drawPane.getChildren().addAll(Executer.edgelines[pathindex][i],Executer.linearrowpolygons[pathindex][i]);
+			}
 		}
 
 		for(int i=0;i<noOfArcs;i++)
 		{
 			Executer.edgearcs[pathindex][i] = arcs.get(i);
 			Executer.arrowpolygons[pathindex][i] = arcpolygons.get(i);
-			drawPane.getChildren().addAll(Executer.edgearcs[pathindex][i],Executer.arrowpolygons[pathindex][i]);
+
+			if(ControlPaths.checkboxes[pathindex+2].isSelected())
+			{
+				drawPane.getChildren().addAll(Executer.edgearcs[pathindex][i],Executer.arrowpolygons[pathindex][i]);
+			}
 		}
 	}
 }

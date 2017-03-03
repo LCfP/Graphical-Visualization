@@ -1,4 +1,4 @@
-package output;
+package user;
 
 import java.util.ArrayList;
 
@@ -8,6 +8,7 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import model.Executer;
 import model.Path;
+import output.Graph;
 
 public class Sort {
 
