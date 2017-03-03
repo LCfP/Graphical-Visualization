@@ -4,6 +4,7 @@ import output.Coordinates;
 import output.Graph;
 import user.ControlPaths;
 import user.Sort;
+import user.Zoom;
 
 import java.util.ArrayList;
 
@@ -52,8 +53,9 @@ public class Executer extends Application
 	public static Label mainLabel;
 
 	public static Pane drawPane;
-	public static ScrollPane leftPane;
-	public static ScrollPane rightPane;
+	public static ScrollPane leftScrollPane;
+	public static ScrollPane rightScrollPane;
+	public static Pane rightPane;
 
 	public static void main(String[] args)
 	{
@@ -97,27 +99,31 @@ public class Executer extends Application
 
 		titleLabel = new Label("");
 		mainLabel = new Label("");
-		
+
 		Pane textPane = new Pane();
 		textPane.getChildren().addAll(titleLabel,mainLabel);
 
-		leftPane = new ScrollPane();
-		leftPane.setPrefWidth(0.5*(1-Graph.graphwidth)*Graph.defaultWidth);
-		leftPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		leftPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		leftPane.setContent(textPane);
+		leftScrollPane = new ScrollPane();
+		leftScrollPane.setPrefWidth(0.5*(1-Graph.graphwidth)*Graph.defaultWidth);
+		leftScrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		leftScrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		leftScrollPane.setContent(textPane);
 
 		drawPane = new Pane();
 		ScrollPane middlePane = new ScrollPane();
 		middlePane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		middlePane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
 		middlePane.setContent(drawPane);
+		drawPane.setOnScroll(null);
 
-		rightPane = new ScrollPane();
-		rightPane.setPrefWidth(0.5*(1-Graph.graphwidth)*Graph.defaultWidth);
-		rightPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
-		rightPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		rightScrollPane = new ScrollPane();
+		rightScrollPane.setPrefWidth(0.5*(1-Graph.graphwidth)*Graph.defaultWidth);
+		rightScrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		rightScrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
+		rightPane = new Pane();
+		rightScrollPane.setContent(rightPane);
 
+		Zoom.createZoomSlider();
 		ControlPaths.createCheckboxes();
 
 		MenuBar menuBar = new MenuBar();
@@ -128,9 +134,9 @@ public class Executer extends Application
 	    displayMenu.getItems().add(sortMenu);
 
 		root.setTop(menuBar);
-		root.setLeft(leftPane);
+		root.setLeft(leftScrollPane);
 		root.setCenter(middlePane);
-		root.setRight(rightPane);
+		root.setRight(rightScrollPane);
 
 		stage.show();
 

@@ -18,40 +18,38 @@ public class ControlPaths {
 
 	public static void createCheckboxes()
 	{
-		Pane checkboxPane = new Pane();
 		String[] routes = getRoutes();
 		int noOfCheckboxes = routes.length;
 		checkboxes = new CheckBox[noOfCheckboxes+2];
-		Executer.rightPane.setContent(checkboxPane);
 
 		Label checkboxtitlelabel = new Label("Paths shown");
 		checkboxtitlelabel.setFont(new Font(Graph.titleLabelSize));
-		checkboxtitlelabel.setLayoutX(0.03*Graph.defaultWidth);
-		checkboxtitlelabel.setLayoutY(0.05*Graph.defaultHeight);
-		checkboxPane.getChildren().add(checkboxtitlelabel);
+		checkboxtitlelabel.setLayoutX(0.025*Graph.defaultWidth);
+		checkboxtitlelabel.setLayoutY(0.18*Graph.defaultHeight);
+		Executer.rightPane.getChildren().add(checkboxtitlelabel);
 
 		checkboxes[0] = new CheckBox("Show all");
 		checkboxes[0].setSelected(true);
 		checkboxes[0].setLayoutX(0.01*Graph.defaultWidth);
-		checkboxes[0].setLayoutY(0.1*Graph.defaultHeight);
+		checkboxes[0].setLayoutY(0.25*Graph.defaultHeight);
 		checkboxes[0].selectedProperty().addListener(getCheckBoxListener(0));
-		checkboxPane.getChildren().add(checkboxes[0]);
+		Executer.rightPane.getChildren().add(checkboxes[0]);
 
 		checkboxes[1] = new CheckBox("Show none");
 		checkboxes[1].setSelected(false);
 		checkboxes[1].setLayoutX(0.01*Graph.defaultWidth);
-		checkboxes[1].setLayoutY(0.1*Graph.defaultHeight+25);
+		checkboxes[1].setLayoutY(0.25*Graph.defaultHeight+25);
 		checkboxes[1].selectedProperty().addListener(getCheckBoxListener(1));
-		checkboxPane.getChildren().add(checkboxes[1]);
+		Executer.rightPane.getChildren().add(checkboxes[1]);
 
 		for(int i=0;i<noOfCheckboxes;i++)
 		{
 			checkboxes[i+2] = new CheckBox(routes[i]);
 			checkboxes[i+2].setSelected(true);
 			checkboxes[i+2].setLayoutX(0.01*Graph.defaultWidth);
-			checkboxes[i+2].setLayoutY(0.1*Graph.defaultHeight+25*(i+2.5));
+			checkboxes[i+2].setLayoutY(0.25*Graph.defaultHeight+25*(i+2.5));
 			checkboxes[i+2].selectedProperty().addListener(getCheckBoxListener(i+2));
-			checkboxPane.getChildren().add(checkboxes[i+2]);
+			Executer.rightPane.getChildren().add(checkboxes[i+2]);
 		}
 	}
 
@@ -95,11 +93,11 @@ public class ControlPaths {
 				if(checkboxcount == 0)
 				{
 					int noOfCheckboxes = checkboxes.length;
-					
+
 					if(newvalue)
 					{
 						checkboxes[1].setSelected(false);
-						
+
 						for(int i=2;i<noOfCheckboxes;i++)
 						{
 							checkboxes[i].setSelected(true);
@@ -109,11 +107,11 @@ public class ControlPaths {
 				else if(checkboxcount == 1)
 				{
 					int noOfCheckboxes = checkboxes.length;
-					
+
 					if(newvalue)
 					{
 						checkboxes[0].setSelected(false);
-						
+
 						for(int i=2;i<noOfCheckboxes;i++)
 						{
 							checkboxes[i].setSelected(false);
@@ -160,7 +158,6 @@ public class ControlPaths {
 					}
 				}
 			}
-
 		};
 
 		return changeListener;

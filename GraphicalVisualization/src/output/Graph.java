@@ -3,6 +3,7 @@ package output;
 import model.Path;
 import user.Mouse;
 import user.Sort;
+import user.Zoom;
 import model.Node;
 import model.Executer;
 
@@ -51,7 +52,7 @@ public class Graph
 	{
 		defaultCircleRadius = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/120;
 		defaultCircleWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/200;
-		defaultArrowWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/120;
+		defaultArrowWidth = Zoom.zoom * Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/120;
 		defaultArcWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/400;
 		graphLabelSize = Math.min(graphwidth*defaultWidth/noOfScreensX,defaultHeight/noOfScreensY)/20;
 		titleLabelSize = Math.min(graphwidth*defaultWidth,defaultHeight)/40;
@@ -113,8 +114,8 @@ public class Graph
 			{
 				labels[i] = new Label(" " + sortingAttribute + " = " + attributes.get(i));
 				labels[i].setFont(new Font(graphLabelSize));
-				labels[i].setLayoutX((i%noOfScreensX)*screenmeasures[0]);
-				labels[i].setLayoutY((i/noOfScreensX)*screenmeasures[1]);
+				labels[i].setLayoutX((i%noOfScreensX)*Zoom.zoom*screenmeasures[0]);
+				labels[i].setLayoutY((i/noOfScreensX)*Zoom.zoom*screenmeasures[1]);
 				drawPane.getChildren().add(labels[i]);
 			}
 		}
@@ -146,11 +147,11 @@ public class Graph
         		{
                     for(int i=0;i<NoNodes;i++)
                     {
-                        initX = x*screenmeasures[0];
-                        initY = y*screenmeasures[1];
+                        initX = x*Zoom.zoom*screenmeasures[0];
+                        initY = y*Zoom.zoom*screenmeasures[1];
 
-                    	circles[i][x][y] = new Circle(initX+screenmeasures[0]*coordinates[0][i],initY+
-                    			screenmeasures[1]*coordinates[1][i],defaultCircleRadius);
+                    	circles[i][x][y] = new Circle(initX+Zoom.zoom*screenmeasures[0]*coordinates[0][i],initY+
+                    			Zoom.zoom*screenmeasures[1]*coordinates[1][i],defaultCircleRadius);
                     	circles[i][x][y].setFill(Color.WHITE);
                     	circles[i][x][y].setStrokeWidth(defaultCircleWidth);
 
@@ -211,8 +212,8 @@ public class Graph
 				Graph.updateDefaultSizes(scene);
 
 				Executer.drawPane.getChildren().clear();
-				Executer.leftPane.setPrefWidth(0.5*(1-graphwidth)*defaultWidth);
-				Executer.rightPane.setPrefWidth(0.5*(1-graphwidth)*defaultWidth);
+				Executer.leftScrollPane.setPrefWidth(0.5*(1-graphwidth)*defaultWidth);
+				Executer.rightScrollPane.setPrefWidth(0.5*(1-graphwidth)*defaultWidth);
 				Graph.drawAll();
 			}
 

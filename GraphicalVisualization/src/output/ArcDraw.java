@@ -12,6 +12,7 @@ import model.Node;
 import model.Path;
 import user.ControlPaths;
 import user.Mouse;
+import user.Zoom;
 
 public class ArcDraw
 {
@@ -35,18 +36,18 @@ public class ArcDraw
 		ArrayList<Polygon> arcpolygons = new ArrayList<Polygon>(0);
 
         double[] measures = Graph.getScreenMeasures();
-        double initX = measures[0] * (screenNo%Graph.noOfScreensX);
-        double initY = measures[1] * (screenNo/Graph.noOfScreensX);
+        double initX = measures[0] * Zoom.zoom * (screenNo%Graph.noOfScreensX);
+        double initY = measures[1] * Zoom.zoom * (screenNo/Graph.noOfScreensX);
 
         for(int i=0;i<NoOfEdges;i++)
         {
         	node1 = nodes.get(i)[0].getNumber();
         	node2 = nodes.get(i)[1].getNumber();
 
-        	coordinates1[0] = initX + measures[0] * coordinates[0][node1];
-        	coordinates1[1] = initY + measures[1] * coordinates[1][node1];
-        	coordinates2[0] = initX + measures[0] * coordinates[0][node2];
-        	coordinates2[1] = initY + measures[1] * coordinates[1][node2];
+        	coordinates1[0] = initX + Zoom.zoom * measures[0] * coordinates[0][node1];
+        	coordinates1[1] = initY + Zoom.zoom * measures[1] * coordinates[1][node1];
+        	coordinates2[0] = initX + Zoom.zoom * measures[0] * coordinates[0][node2];
+        	coordinates2[1] = initY + Zoom.zoom * measures[1] * coordinates[1][node2];
 
         	if(edgeCount[node1][node2] == 0 & edgeCount[node2][node1] == 0)
         	{
