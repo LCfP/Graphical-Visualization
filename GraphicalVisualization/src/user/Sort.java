@@ -44,13 +44,14 @@ public class Sort {
 	    return sortMenu;
 	}
 
-	public static EventHandler<ActionEvent> sortByAll()
+	private static EventHandler<ActionEvent> sortByAll()
 	{
 		EventHandler<ActionEvent> sortClick = new EventHandler<ActionEvent>()
 		{
 			public void handle(ActionEvent a)
 			{
 				Executer.sortingAttribute = "";
+				Graph.updateCircleColors();
 				ControlPaths.updateRightPane();
 				Graph.drawAll();
 			}
@@ -59,7 +60,7 @@ public class Sort {
 		return(sortClick);
 	}
 
-	public static EventHandler<ActionEvent> sortBy()
+	private static EventHandler<ActionEvent> sortBy()
 	{
 		EventHandler<ActionEvent> sortClick = new EventHandler<ActionEvent>()
 		{
@@ -67,6 +68,7 @@ public class Sort {
 			{
 					MenuItem menuItem = (MenuItem) (a.getSource());
 					Executer.sortingAttribute = menuItem.getText();
+					Graph.updateCircleColors();
 					ControlPaths.updateRightPane();
 					Graph.drawAll();
 			}

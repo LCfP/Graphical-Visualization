@@ -135,6 +135,7 @@ public class Graph
         double initX;
         double initY;
 		Circle[][][] circles = new Circle[NoNodes][noOfScreensX][noOfScreensY];
+		int[] color;
 
 		Executer.titleLabel.setText("");
 		Executer.mainLabel.setText("");
@@ -150,6 +151,8 @@ public class Graph
                         initX = x*Zoom.zoom*screenmeasures[0];
                         initY = y*Zoom.zoom*screenmeasures[1];
 
+                        color = Executer.circleColors[i][x][y];
+
                     	circles[i][x][y] = new Circle(initX+Zoom.zoom*screenmeasures[0]*coordinates[0][i],initY+
                     			Zoom.zoom*screenmeasures[1]*coordinates[1][i],defaultCircleRadius);
                     	circles[i][x][y].setFill(Color.WHITE);
@@ -158,7 +161,7 @@ public class Graph
                     	circles[i][x][y].setOnMouseEntered(Mouse.MouseOnCircleEnter());
                     	circles[i][x][y].setOnMouseExited(Mouse.MouseOnCircleExit());
                     	circles[i][x][y].setOnMouseClicked(Mouse.MouseclickOnCircle());
-                    	circles[i][x][y].setStroke(Color.RED);
+                    	circles[i][x][y].setStroke(Color.rgb(color[0],color[1],color[2]));
 
                     	drawPane.getChildren().add(circles[i][x][y]);
                     }
@@ -222,8 +225,9 @@ public class Graph
 		return listener;
 	}
 
-	public static int[][] createColors(ArrayList<Path> paths)
+	public static int[][] createColors()
 	{
+		ArrayList<Path> paths = Executer.paths;
 		int noOfPaths = paths.size();
 		int[][] colors = new int[noOfPaths][3];
 
@@ -233,6 +237,57 @@ public class Graph
 		}
 
 		return colors;
+	}
+
+	public static int[][][][] createRedColors()
+	{
+		int noOfNodes = Executer.nodes.size();
+		int[][][][] colors = new int[noOfNodes][1][1][3];
+
+		for(int i=0;i<noOfNodes;i++)
+		{
+			colors[i][0][0][0] = 255;
+			colors[i][0][0][1] = 0;
+			colors[i][0][0][2] = 0;
+		}
+
+		return colors;
+	}
+
+	public static void updateCircleColors()
+	{
+		int[][][][] newColors;
+		int noOfGraphs;
+		int noOfNodes = Executer.nodes.size();
+		int noOfXScreens;
+		int noOfYScreens;
+
+		if(Executer.sortingAttribute.equals(""))
+		{
+			newColors = createRedColors();
+		}
+		else
+		{
+			noOfGraphs = Sort.getDistinctAttributes(Executer.sortingAttribute).size();
+			noOfXScreens = (int) (Math.sqrt(noOfGraphs-1)+1);
+			noOfYScreens = noOfGraphs/noOfXScreens+1;
+			newColors = new int[noOfNodes][noOfXScreens][noOfYScreens][3];
+
+			for(int a=0;a<noOfNodes;a++)
+			{
+				for(int b=0;b<noOfXScreens;b++)
+				{
+					for(int c=0;c<noOfYScreens;c++)
+					{
+						newColors[a][b][c][0] = 255;
+						newColors[a][b][c][1] = 0;
+						newColors[a][b][c][2] = 0;
+					}
+				}
+			}
+		}
+
+		Executer.circleColors = newColors;
 	}
 
 	public static int[] inventColor(int index)

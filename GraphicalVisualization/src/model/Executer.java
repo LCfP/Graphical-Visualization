@@ -38,6 +38,7 @@ public class Executer extends Application
 	public static double aspectratio;
 
 	public static int[][] pathColors;
+	public static int[][][][] circleColors;
 
 	public static Circle[][][] nodecircles;
 	public static Arc[][] edgearcs;
@@ -82,7 +83,9 @@ public class Executer extends Application
 		Coordinates.calculateNormalizedCoordinates(nodes);
 
 		//Create unique colors for each path
-		pathColors = Graph.createColors(paths);
+		pathColors = Graph.createColors();
+
+		circleColors = Graph.createRedColors();
 
 		//Creating a window object
 		launch(args);
@@ -124,14 +127,17 @@ public class Executer extends Application
 		rightScrollPane.setContent(rightPane);
 
 		Zoom.createZoomSlider();
+		Zoom.addZoomSlider();
 		ControlPaths.createCheckboxes();
+		ControlPaths.updateRightPane();
 
 		MenuBar menuBar = new MenuBar();
 	    Menu displayMenu = new Menu("Display");
 	    menuBar.getMenus().add(displayMenu);
 
+	    Menu colorMenu = ControlPaths.makeColorMenu();
 		sortMenu = Sort.makeSortMenu();
-	    displayMenu.getItems().add(sortMenu);
+	    displayMenu.getItems().addAll(colorMenu,sortMenu);
 
 		root.setTop(menuBar);
 		root.setLeft(leftScrollPane);

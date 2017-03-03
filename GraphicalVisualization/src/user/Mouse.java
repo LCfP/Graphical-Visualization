@@ -571,6 +571,8 @@ public class Mouse {
     		Executer.titleLabel.setText("");
     		Executer.mainLabel.setText("");
 
+        	ControlPaths.updateRightPane();
+
     		resetArcsAndPolygons();
     		addCircleListeners();
     		addArcAndPolygonListeners();
@@ -584,6 +586,7 @@ public class Mouse {
     		resetCircle();
     		resetArcsAndPolygons();
 
+        	ControlPaths.colorizeOption(pathno);
     		emphasizePath(pathno);
 
     		nodeclicked = false;
@@ -593,6 +596,7 @@ public class Mouse {
     	}
     	else
     	{
+        	ControlPaths.colorizeOption(pathno);
     		removeCircleListeners();
     		removeArcAndPolygonListeners();
     		emphasizePath(pathno);
@@ -660,6 +664,8 @@ public class Mouse {
 	        		Title.setText("");
 	        		Main.setText("");
 
+	        		ControlPaths.updateRightPane();
+
 		        	resetCircle();
 
 		        	addCircleListeners();
@@ -681,6 +687,8 @@ public class Mouse {
 		        	nodeclicked = true;
 		        	nodeindex = findNodeIndex(circle);
 		        	pathindex = -1;
+		        	
+	        		ControlPaths.colorizeOption(nodeindex);
 	        	}
 	        	else
 	        	{
@@ -693,6 +701,8 @@ public class Mouse {
 	        		clickedstate = true;
 		        	nodeclicked = true;
 		        	nodeindex = findNodeIndex(circle);
+
+	        		ControlPaths.colorizeOption(nodeindex);
 	        	}
 
 	        	printNodeText(nodeno);
@@ -812,7 +822,6 @@ public class Mouse {
 	        	Polygon polygon = (Polygon) t.getSource();
 	        	int pathno = getPathNo(polygon);
 	        	adjustState(pathno);
-
 	        	printPathText(pathno);
 	        }
 		};
@@ -828,7 +837,6 @@ public class Mouse {
 	        	Arc arc = (Arc) t.getSource();
 	        	int pathno = getPathNo(arc);
 	        	adjustState(pathno);
-
 	        	printPathText(pathno);
 	        }
 		};
@@ -844,7 +852,6 @@ public class Mouse {
 	        	Line line = (Line) t.getSource();
 	        	int pathno = getPathNo(line);
 	        	adjustState(pathno);
-
 	        	printPathText(pathno);
 	        }
 		};

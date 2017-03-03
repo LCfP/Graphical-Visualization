@@ -11,14 +11,15 @@ import output.Graph;
 
 public class Zoom {
 	public static Slider zoomslider;
+	public static Label zoomlabel;
 	public static double zoom = 1;
 
 	public static void createZoomSlider()
 	{
-		Label zoomLabel = new Label("Zoom");
-		zoomLabel.setFont(new Font(Graph.titleLabelSize));
-		zoomLabel.setLayoutX(0.045*Graph.defaultWidth);
-		zoomLabel.setLayoutY(0.05*Graph.defaultHeight);
+		zoomlabel = new Label("Zoom");
+		zoomlabel.setFont(new Font(Graph.titleLabelSize));
+		zoomlabel.setLayoutX(0.045*Graph.defaultWidth);
+		zoomlabel.setLayoutY(0.05*Graph.defaultHeight);
 
 		zoomslider = new Slider(1,10,1);
 		zoomslider.setLayoutX(0.01*Graph.defaultWidth);
@@ -44,7 +45,11 @@ public class Zoom {
 			}
 		});
 		zoomslider.valueProperty().addListener(zoomsliderListener());
-		Executer.rightPane.getChildren().addAll(zoomLabel,zoomslider);
+	}
+	
+	public static void addZoomSlider()
+	{
+		Executer.rightPane.getChildren().addAll(zoomlabel,zoomslider);
 	}
 
 	private static ChangeListener<Number> zoomsliderListener()
