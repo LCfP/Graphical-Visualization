@@ -50,10 +50,10 @@ public class Graph
 
 	public static void updateOtherSizes()
 	{
-		defaultCircleRadius = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/120;
-		defaultCircleWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/200;
+		defaultCircleRadius = Zoom.zoom * Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/120;
+		defaultCircleWidth = Zoom.zoom * Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/200;
 		defaultArrowWidth = Zoom.zoom * Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/120;
-		defaultArcWidth = Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/400;
+		defaultArcWidth = Zoom.zoom * Math.min(defaultHeight/noOfScreensY,graphwidth*defaultWidth/noOfScreensX)/400;
 		graphLabelSize = Math.min(graphwidth*defaultWidth/noOfScreensX,defaultHeight/noOfScreensY)/20;
 		titleLabelSize = Math.min(graphwidth*defaultWidth,defaultHeight)/40;
 		mainLabelSize = Math.min(graphwidth*defaultWidth,defaultHeight)/60;
@@ -99,7 +99,7 @@ public class Graph
 		else
 		{
 			attributes = Sort.getDistinctAttributes(sortingAttribute);
-			attributeNo = Sort.getAttributeNo(sortingAttribute);
+			attributeNo = Executer.pathAttributeNames.indexOf(sortingAttribute);
 			noOfAttributes = attributes.size();
 			labels = new Label[noOfAttributes];
 

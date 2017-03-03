@@ -15,14 +15,15 @@ import output.Graph;
 
 public class ControlPaths {
 	public static CheckBox[] checkboxes;
+	public static Label checkboxtitlelabel;
 
 	public static void createCheckboxes()
 	{
 		String[] routes = getRoutes();
-		int noOfCheckboxes = routes.length;
-		checkboxes = new CheckBox[noOfCheckboxes+2];
+		int noOfCheckboxes = routes.length + 2;
+		checkboxes = new CheckBox[noOfCheckboxes];
 
-		Label checkboxtitlelabel = new Label("Paths shown");
+		checkboxtitlelabel = new Label("Paths shown");
 		checkboxtitlelabel.setFont(new Font(Graph.titleLabelSize));
 		checkboxtitlelabel.setLayoutX(0.025*Graph.defaultWidth);
 		checkboxtitlelabel.setLayoutY(0.18*Graph.defaultHeight);
@@ -42,14 +43,61 @@ public class ControlPaths {
 		checkboxes[1].selectedProperty().addListener(getCheckBoxListener(1));
 		Executer.rightPane.getChildren().add(checkboxes[1]);
 
-		for(int i=0;i<noOfCheckboxes;i++)
+		for(int i=2;i<noOfCheckboxes;i++)
 		{
-			checkboxes[i+2] = new CheckBox(routes[i]);
-			checkboxes[i+2].setSelected(true);
-			checkboxes[i+2].setLayoutX(0.01*Graph.defaultWidth);
-			checkboxes[i+2].setLayoutY(0.25*Graph.defaultHeight+25*(i+2.5));
-			checkboxes[i+2].selectedProperty().addListener(getCheckBoxListener(i+2));
-			Executer.rightPane.getChildren().add(checkboxes[i+2]);
+			checkboxes[i] = new CheckBox(routes[i-2]);
+			checkboxes[i].setSelected(true);
+			checkboxes[i].setLayoutX(0.01*Graph.defaultWidth);
+			checkboxes[i].setLayoutY(0.25*Graph.defaultHeight+25*(i+0.5));
+			checkboxes[i].selectedProperty().addListener(getCheckBoxListener(i));
+			Executer.rightPane.getChildren().add(checkboxes[i]);
+		}
+	}
+
+	public static void updateRightPane()
+	{
+		if(Executer.sortingAttribute.equals(""))
+		{
+			int noOfCheckboxes = checkboxes.length;
+
+			checkboxtitlelabel.setLayoutY(0.18*Graph.defaultHeight);
+			checkboxes[0].setLayoutY(0.25*Graph.defaultHeight);
+			checkboxes[1].setLayoutY(0.25*Graph.defaultHeight+25);
+
+			for(int i=2;i<noOfCheckboxes;i++)
+			{
+				checkboxes[i].setLayoutY(0.25*Graph.defaultHeight+25*(i+0.5));
+			}
+		}
+		else
+		{
+			int noOfPaths = Executer.paths.size();
+			int attributeNo = Executer.pathAttributeNames.indexOf(Executer.sortingAttribute);
+			ArrayList<String> pathAttributes = Sort.getDistinctAttributes(Executer.sortingAttribute);
+			String attribute;
+			int noOfPathAttributes = pathAttributes.size();
+			int checkboxcounter = 0;
+			Path path;
+			
+			checkboxtitlelabel.setLayoutY(0.18*Graph.defaultHeight);
+			checkboxes[0].setLayoutY(0.25*Graph.defaultHeight);
+			checkboxes[1].setLayoutY(0.25*Graph.defaultHeight+25);
+
+			for(int i=0;i<noOfPathAttributes;i++)
+			{
+				attribute = pathAttributes.get(i);
+				
+				for(int j=0;j<noOfPaths;j++)
+				{
+					path = Executer.paths.get(j);
+					
+					if(path.getPathAttributes().get(attributeNo).equals(attribute))
+					{
+						checkboxes[j+2].setLayoutY(0.25*Graph.defaultHeight+25*((i+1)*0.5+checkboxcounter+2));
+						checkboxcounter ++;
+					}
+				}
+			}
 		}
 	}
 

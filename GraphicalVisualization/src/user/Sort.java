@@ -51,6 +51,7 @@ public class Sort {
 			public void handle(ActionEvent a)
 			{
 				Executer.sortingAttribute = "";
+				ControlPaths.updateRightPane();
 				Graph.drawAll();
 			}
 		};
@@ -66,29 +67,12 @@ public class Sort {
 			{
 					MenuItem menuItem = (MenuItem) (a.getSource());
 					Executer.sortingAttribute = menuItem.getText();
+					ControlPaths.updateRightPane();
 					Graph.drawAll();
 			}
 		};
 
 		return(sortClick);
-	}
-
-	public static int getAttributeNo(String attributeName)
-	{
-		int attributeNo =-1;
-		ArrayList<String> attributeNames = Executer.pathAttributeNames;
-		int noOfAttributes = attributeNames.size();
-
-		for(int i=0;i<noOfAttributes;i++)
-		{
-			if(attributeName.equals(attributeNames.get(i)))
-			{
-				attributeNo = i;
-				break;
-			}
-		}
-
-		return(attributeNo);
 	}
 
 	public static ArrayList<String> getDistinctAttributes(String attributeName)
