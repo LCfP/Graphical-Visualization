@@ -3,6 +3,7 @@ import input.Input;
 import output.Coordinates;
 import output.Export;
 import output.Graph;
+import output.Mode;
 import user.ControlPaths;
 import user.Sort;
 import user.Zoom;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
@@ -51,6 +53,7 @@ public class Executer extends Application
 	public static Menu sortMenu;
 	public static String sortingAttribute;
 	public static double menuBarHeight;
+	public static CheckMenuItem nodeMode;
 
 	public static Label titleLabel;
 	public static Label mainLabel;
@@ -136,16 +139,24 @@ public class Executer extends Application
 		MenuBar menuBar = new MenuBar();
 		Menu fileMenu = new Menu("File");
 	    Menu displayMenu = new Menu("Display");
+	    Menu modeMenu = new Menu("Mode");
+
 	    menuBar.getMenus().add(fileMenu);
 	    menuBar.getMenus().add(displayMenu);
+	    menuBar.getMenus().add(modeMenu);
 
 		MenuItem export = new MenuItem("Export");
 		fileMenu.getItems().add(export);
 		export.setOnAction(Export.getExportListener());
-	    
+
 	    Menu colorMenu = ControlPaths.makeColorMenu();
 		sortMenu = Sort.makeSortMenu();
 	    displayMenu.getItems().addAll(colorMenu,sortMenu);
+
+	    nodeMode = new CheckMenuItem("Node");
+	    nodeMode.setSelected(false);
+	    nodeMode.selectedProperty().addListener(Mode.getNodeModeListener());
+	    modeMenu.getItems().add(nodeMode);
 
 		root.setTop(menuBar);
 		root.setLeft(leftScrollPane);

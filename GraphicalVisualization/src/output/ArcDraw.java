@@ -44,7 +44,7 @@ public class ArcDraw
         {
         	node1 = nodes.get(i)[0];
         	node2 = nodes.get(i)[1];
-System.out.println(node1 + " " +node2);
+
         	for(int j=0;j<Executer.nodes.size();j++)
         	{
         		if(node1 == Executer.nodes.get(j).getNumber())
@@ -54,7 +54,7 @@ System.out.println(node1 + " " +node2);
         	}
         	node1 = temp1;
         	node2 = temp2;
-System.out.println(node1 + " " +node2);
+
         	coordinates1[0] = initX + Zoom.zoom * measures[0] * coordinates[0][node1];
         	coordinates1[1] = initY + Zoom.zoom * measures[1] * coordinates[1][node1];
         	coordinates2[0] = initX + Zoom.zoom * measures[0] * coordinates[0][node2];

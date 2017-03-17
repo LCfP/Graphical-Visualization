@@ -125,7 +125,7 @@ public class Graph
 	}
 
 	//Draws all nodes as red circles
-	private static void drawNodes(int noOfScreens)
+	public static void drawNodes(int noOfScreens)
 	{
 		Pane drawPane = Executer.drawPane;
 		ArrayList<Node> nodes = Executer.nodes;

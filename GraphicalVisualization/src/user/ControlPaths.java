@@ -18,6 +18,7 @@ import javafx.util.StringConverter;
 import model.Executer;
 import model.Path;
 import output.Graph;
+import output.Mode;
 
 public class ControlPaths {
 	public static CheckBox[] checkboxes;
@@ -247,10 +248,6 @@ public class ControlPaths {
 		ChangeListener<Boolean> changeListener = new ChangeListener<Boolean>()
 		{
 			public void changed(ObservableValue<? extends Boolean> ov, Boolean oldvalue, Boolean newvalue) {
-				Pane drawPane = Executer.drawPane;
-				int noOfLines;
-				int noOfArcs;
-
 				if(checkboxcount == 0)
 				{
 					int noOfCheckboxes = checkboxes.length;
@@ -281,47 +278,59 @@ public class ControlPaths {
 				}
 				else
 				{
-					if(newvalue)
-					{
-						noOfLines = Executer.edgelines[checkboxcount-2].length;
-						checkboxes[1].setSelected(false);
-
-						for(int i=0;i<noOfLines;i++)
-						{
-							drawPane.getChildren().addAll(Executer.edgelines[checkboxcount-2][i],Executer.linearrowpolygons[checkboxcount-2][i]);
-						}
-
-						noOfArcs = Executer.edgearcs[checkboxcount-2].length;
-
-						for(int i=0;i<noOfArcs;i++)
-						{
-							drawPane.getChildren().addAll(Executer.edgearcs[checkboxcount-2][i],Executer.arrowpolygons[checkboxcount-2][i]);
-						}
-					}
+					if(Executer.nodeMode.isSelected())
+						Mode.drawPath(newvalue,checkboxcount);
 					else
-					{
-						noOfLines = Executer.edgelines[checkboxcount-2].length;
-						checkboxes[0].setSelected(false);
-
-						for(int i=0;i<noOfLines;i++)
-						{
-							drawPane.getChildren().remove(Executer.edgelines[checkboxcount-2][i]);
-							drawPane.getChildren().remove(Executer.linearrowpolygons[checkboxcount-2][i]);
-						}
-
-						noOfArcs = Executer.edgearcs[checkboxcount-2].length;
-
-						for(int i=0;i<noOfArcs;i++)
-						{
-							drawPane.getChildren().remove(Executer.edgearcs[checkboxcount-2][i]);
-							drawPane.getChildren().remove(Executer.arrowpolygons[checkboxcount-2][i]);
-						}
-					}
+						drawPath(newvalue,checkboxcount);
 				}
 			}
 		};
 
 		return changeListener;
+	}
+
+	private static void drawPath(boolean newvalue,int checkboxcount)
+	{
+		Pane drawPane = Executer.drawPane;
+		int noOfLines;
+		int noOfArcs;
+
+		if(newvalue)
+		{
+			noOfLines = Executer.edgelines[checkboxcount-2].length;
+			checkboxes[1].setSelected(false);
+
+			for(int i=0;i<noOfLines;i++)
+			{
+				drawPane.getChildren().addAll(Executer.edgelines[checkboxcount-2][i],Executer.linearrowpolygons[checkboxcount-2][i]);
+			}
+
+			noOfArcs = Executer.edgearcs[checkboxcount-2].length;
+
+			for(int i=0;i<noOfArcs;i++)
+			{
+				drawPane.getChildren().addAll(Executer.edgearcs[checkboxcount-2][i],Executer.arrowpolygons[checkboxcount-2][i]);
+			}
+		}
+		else
+		{
+			noOfLines = Executer.edgelines[checkboxcount-2].length;
+			checkboxes[0].setSelected(false);
+
+			for(int i=0;i<noOfLines;i++)
+			{
+				drawPane.getChildren().remove(Executer.edgelines[checkboxcount-2][i]);
+				drawPane.getChildren().remove(Executer.linearrowpolygons[checkboxcount-2][i]);
+			}
+
+			noOfArcs = Executer.edgearcs[checkboxcount-2].length;
+
+			for(int i=0;i<noOfArcs;i++)
+			{
+				drawPane.getChildren().remove(Executer.edgearcs[checkboxcount-2][i]);
+				drawPane.getChildren().remove(Executer.arrowpolygons[checkboxcount-2][i]);
+			}
+		}
 	}
 
 	private static ChangeListener<Number> getColorsliderListener(int colorindex,int pathno)
