@@ -87,7 +87,7 @@ public class NodeParse {
 						}
 						else
 						{
-							Input.FileNotCompatible("multiple \\)");
+							Input.FileNotCompatible("multiple )");
 						}
 					}
 					else

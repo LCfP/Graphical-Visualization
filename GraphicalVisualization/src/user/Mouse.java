@@ -503,7 +503,7 @@ public class Mouse {
 	{
         String maintext = "";
         Path path = Executer.paths.get(pathno);
-        ArrayList<Node[]> nodes = path.getNodes();
+        ArrayList<int[]> nodes = path.getNodes();
     	ArrayList<String> pathAttributeNames = Executer.pathAttributeNames;
     	ArrayList<String> pathAttributes = path.getPathAttributes();
     	int noOfPathAttributes = pathAttributeNames.size();
@@ -521,7 +521,7 @@ public class Mouse {
 
         for(int i=0;i<noOfEdges;i++)
         {
-        	maintext = maintext +"\n"+ nodes.get(i)[0].getNumber()+"-"+nodes.get(i)[1].getNumber() +"\n";
+        	maintext = maintext +"\n"+ nodes.get(i)[0]+"-"+nodes.get(i)[1] +"\n";
 
         	for(int j=0;j<noOfEdgeAttributes;j++)
         	{
@@ -687,7 +687,7 @@ public class Mouse {
 		        	nodeclicked = true;
 		        	nodeindex = findNodeIndex(circle);
 		        	pathindex = -1;
-		        	
+
 	        		ControlPaths.colorizeOption(nodeindex);
 	        	}
 	        	else

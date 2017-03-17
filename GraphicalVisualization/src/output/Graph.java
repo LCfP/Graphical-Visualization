@@ -242,13 +242,19 @@ public class Graph
 	public static int[][][][] createRedColors()
 	{
 		int noOfNodes = Executer.nodes.size();
-		int[][][][] colors = new int[noOfNodes][1][1][3];
+		int[][][][] colors = new int[noOfNodes][noOfScreensX][noOfScreensY][3];
 
 		for(int i=0;i<noOfNodes;i++)
 		{
-			colors[i][0][0][0] = 255;
-			colors[i][0][0][1] = 0;
-			colors[i][0][0][2] = 0;
+			for(int x=0;x<noOfScreensX;x++)
+			{
+				for(int y=0;y<noOfScreensY;y++)
+				{
+					colors[i][x][y][0] = 255;
+					colors[i][x][y][1] = 0;
+					colors[i][x][y][2] = 0;
+				}
+			}
 		}
 
 		return colors;

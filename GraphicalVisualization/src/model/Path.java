@@ -4,7 +4,7 @@ import java.util.ArrayList;
 public class Path {
 
 	//contains an arraylist of edges
-	private ArrayList<Node[]> Nodes;
+	private ArrayList<int[]> Nodes;
 
 	//attributes of the path and edge
 	private ArrayList<String> PathAttributes;
@@ -13,13 +13,13 @@ public class Path {
 	//creates an empty path
 	public Path()
 	{
-		Nodes = new ArrayList<Node[]>(0);
+		Nodes = new ArrayList<int[]>(0);
 		PathAttributes = new ArrayList<String>(0);
 		EdgeAttributes = new ArrayList<String[]>(0);
 	}
 
 	//creates a non-empty path
-	public Path(ArrayList<Node[]> nodes)
+	public Path(ArrayList<int[]> nodes)
 	{
 		Nodes = nodes;
 		PathAttributes = new ArrayList<String>(0);
@@ -28,24 +28,24 @@ public class Path {
 
 	//deep copy class constructor
 	public Path(Path path){
-		ArrayList<Node[]> temp = path.getNodes();
+		ArrayList<int[]> temp = path.getNodes();
 		int noOfNodes = temp.size();
 		ArrayList<String> pathAttributes = path.getPathAttributes();
 		ArrayList<String[]> allEdgeAttributes = path.getEdgeAttributes();
 		int noOfPathAttributes = pathAttributes.size();
 		int noOfEdges = allEdgeAttributes.size();
 		int noOfEdgeAttributes = allEdgeAttributes.get(0).length;
-		Nodes = new ArrayList<Node[]>(0);
+		Nodes = new ArrayList<int[]>(0);
 		PathAttributes = new ArrayList<String>(0);
 		EdgeAttributes = new ArrayList<String[]>(0);
-		Node[] nodes = new Node[2];
+		int[] nodes = new int[2];
 		String[] edgeAttributes;
 		String[] edgeattributes = new String[noOfEdgeAttributes];
 
 		for(int i=0;i<noOfNodes;i++)
 		{
-			nodes[0] = new Node(temp.get(i)[0]);
-			nodes[1] = new Node(temp.get(i)[1]);
+			nodes[0] = temp.get(i)[0];
+			nodes[1] = temp.get(i)[1];
 			Nodes.add(nodes);
 		}
 
@@ -85,12 +85,13 @@ public class Path {
 	{
 		ArrayList<String> pathAttributes = path.getPathAttributes();
 		ArrayList<String[]> edgeAttributes = path.getEdgeAttributes();
-		ArrayList<Node[]> allnodes = path.getNodes();
+		ArrayList<int[]> allnodes = path.getNodes();
 		int noofnodes = Nodes.size();
 		int noofedges = EdgeAttributes.size();
-		int noofedgeattributes = EdgeAttributes.get(0).length;
-		Node[] nodes1;
-		Node[] nodes2;
+		int noofedgeattributes1 = 0;
+		int noofedgeattributes2 = 0;
+		int[] nodes1;
+		int[] nodes2;
 		String[] edgeattributes1;
 		String[] edgeattributes2;
 
@@ -119,9 +120,15 @@ public class Path {
 				edgeattributes1 = edgeAttributes.get(i);
 				edgeattributes2 = EdgeAttributes.get(i);
 
-				if(edgeattributes1.length == noofedgeattributes & edgeattributes2.length == noofedgeattributes)
+				try{
+					noofedgeattributes1 = edgeattributes1.length;
+					noofedgeattributes2 = edgeattributes2.length;
+				}
+				catch(NullPointerException e){}
+
+				if(noofedgeattributes1 == noofedgeattributes2)
 				{
-					for(int j=0;j<noofedgeattributes;j++)
+					for(int j=0;j<noofedgeattributes1;j++)
 					{
 						if(edgeattributes1[j] != edgeattributes2[j])
 						{
@@ -170,12 +177,12 @@ public class Path {
 	}
 
 	//adds an edge
-	public void addNode(Node[] node){
-		Nodes.add(node);
+	public void addNodes(int[] nodes){
+		Nodes.add(nodes);
 	}
 
 	//returns edges
-	public ArrayList<Node[]> getNodes(){
+	public ArrayList<int[]> getNodes(){
 		return Nodes;
 	}
 

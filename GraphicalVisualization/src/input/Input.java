@@ -102,13 +102,13 @@ public class Input {
 
 	//Output the paths to the screen
 	public static void printPaths(ArrayList<Path> Paths)
-	{		
+	{
 		String Outputpath;
 		int noOfPathAttributes;
 		int noOfEdgeAttributes;
 		ArrayList<String> attributeNames;
 		ArrayList<String> attributes;
-		ArrayList<Node[]> OutputEdges;
+		ArrayList<int[]> OutputEdges;
 		Path path;
 
 		System.out.println("");
@@ -176,7 +176,7 @@ public class Input {
 						for(int j=0;j<OutputEdges.size();j++)
 						{
 							attributes = convertToArrayList(path.getEdgeAttributes().get(j));
-							Outputpath = Outputpath + OutputEdges.get(j)[0].getNumber() +"-"+OutputEdges.get(j)[1].getNumber() +" ";
+							Outputpath = Outputpath + OutputEdges.get(j)[0] +"-"+OutputEdges.get(j)[1] +" ";
 							Outputpath = Outputpath + "(";
 
 							if(noOfEdgeAttributes>1)
@@ -194,7 +194,7 @@ public class Input {
 					{
 						for(int j=0;j<OutputEdges.size();j++)
 						{
-							Outputpath = Outputpath + OutputEdges.get(j)[0].getNumber() +"-"+OutputEdges.get(j)[1].getNumber() +" ";
+							Outputpath = Outputpath + OutputEdges.get(j)[0] +"-"+OutputEdges.get(j)[1] +" ";
 						}
 					}
 
@@ -212,7 +212,7 @@ public class Input {
 
 					for(int j=0;j<OutputEdges.size();j++)
 					{
-						Outputpath = OutputEdges.get(j)[0].getNumber() +"-"+OutputEdges.get(j)[1].getNumber() +" ";
+						Outputpath = OutputEdges.get(j)[0] +"-"+OutputEdges.get(j)[1] +" ";
 						System.out.printf("%s",Outputpath);
 					}
 					System.out.println("");
@@ -226,7 +226,8 @@ public class Input {
 		ArrayList<String> Attributes = new ArrayList<String>(0);
 		String[] lineSplit;
 		int noOfAttributes;
-		string = string.substring(1,string.length()-1);
+		string = string.split("\\(")[1];
+		string = string.split("\\)")[0];
 
 		if(string.contains(","))
 		{
@@ -239,7 +240,7 @@ public class Input {
 
 				if(lineSplit[i].equals(""))
 				{
-					Input.FileNotCompatible("empty attribute name");
+					Input.FileNotCompatible("empty attribute (name)");
 				}
 				else
 				{

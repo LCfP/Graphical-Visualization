@@ -80,9 +80,10 @@ public class PathParse {
 
 					if(line.contains("("))
 					{
-						if(line.endsWith(")"))
+						if(line.contains(")"))
 						{
-							text = line.split("(" + "\\(")[1];
+							text = "(" + line.split("\\(")[1];
+							text = text.split("\\)")[0] + ")";
 							EdgeAttributeNames = Input.getAttributesFromString(text);
 							noOfEdgeAttributes = EdgeAttributeNames.size();
 						}
@@ -91,6 +92,8 @@ public class PathParse {
 							Input.FileNotCompatible(") missing");
 						}
 					}
+					else
+						noOfEdgeAttributes = 0;
 				}
 				else
 				{
@@ -130,7 +133,7 @@ public class PathParse {
 				{
 					path = new Path();
 
-					lineSplit = line.split(")");
+					lineSplit = line.split("\\)");
 
 					for(int i=0;i<lineSplit.length;i++)
 					{
@@ -234,7 +237,7 @@ public class PathParse {
 							{
 								path.addPathAttribute(Attributes.get(i));
 							}
-							
+
 							for(int i=1;i<lineSplit.length;i++)
 							{
 								if(lineSplit[i].contains("("))
@@ -245,7 +248,7 @@ public class PathParse {
 									{
 										lineSplit3[0] = lineSplit3[0].trim();
 										lineSplit3[1] = lineSplit3[1].trim();
-										
+
 										Attributes = Input.getAttributesFromString("("+lineSplit3[1]+")");
 
 										if(Attributes.size() == noOfEdgeAttributes)
@@ -299,9 +302,7 @@ public class PathParse {
 		string = string.trim();
 		String[] stringSplit;
 		int noofnodes = nodes.size();
-		int node1;
-		int node2;
-		Node[] node = new Node[2];
+		int[] node = new int[2];
 
 		if(string.contains("-"))
 		{
@@ -314,14 +315,12 @@ public class PathParse {
 
 				try
 				{
-					node1 = Integer.parseInt(stringSplit[0]);
-					node2 = Integer.parseInt(stringSplit[1]);
+					node[0] = Integer.parseInt(stringSplit[0]);
+					node[1] = Integer.parseInt(stringSplit[1]);
 
-					if(node1 >= 0 & node1 < noofnodes & node2 >= 0 & node2 < noofnodes)
+					if(node[0] >= 0 & node[0] < noofnodes & node[1] >= 0 & node[1] < noofnodes)
 					{
-						node[0] = nodes.get(node1);
-						node[1] = nodes.get(node2);
-						path.addNode(node);
+						path.addNodes(node);
 						path.addEdgeAttribute(attributes);
 					}
 					else

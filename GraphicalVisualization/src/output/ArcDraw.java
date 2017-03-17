@@ -8,7 +8,6 @@ import javafx.scene.shape.ArcType;
 import javafx.scene.shape.Line;
 import javafx.scene.shape.Polygon;
 import model.Executer;
-import model.Node;
 import model.Path;
 import user.ControlPaths;
 import user.Mouse;
@@ -20,7 +19,7 @@ public class ArcDraw
 	//method that draws circle arcs between nodes
 	public static int[][] makeArcs(Path path,int screenNo,int[][] edgeCount)
 	{
-		ArrayList<Node[]> nodes = path.getNodes();
+		ArrayList<int[]> nodes = path.getNodes();
 		int pathindex = Executer.paths.indexOf(path);
 		int[] color = Executer.pathColors[pathindex];
 		int NoOfEdges = nodes.size();
@@ -29,6 +28,8 @@ public class ArcDraw
 		double[] coordinates2 = new double[2];
 		int node1;
 		int node2;
+		int temp1 = -1;
+		int temp2 = -1;
 
 		ArrayList<Line> lines = new ArrayList<Line>(0);
 		ArrayList<Polygon> linepolygons = new ArrayList<Polygon>(0);
@@ -41,9 +42,19 @@ public class ArcDraw
 
         for(int i=0;i<NoOfEdges;i++)
         {
-        	node1 = nodes.get(i)[0].getNumber();
-        	node2 = nodes.get(i)[1].getNumber();
-
+        	node1 = nodes.get(i)[0];
+        	node2 = nodes.get(i)[1];
+System.out.println(node1 + " " +node2);
+        	for(int j=0;j<Executer.nodes.size();j++)
+        	{
+        		if(node1 == Executer.nodes.get(j).getNumber())
+        			temp1 = j;
+        		if(node2 == Executer.nodes.get(j).getNumber())
+        			temp2 = j;
+        	}
+        	node1 = temp1;
+        	node2 = temp2;
+System.out.println(node1 + " " +node2);
         	coordinates1[0] = initX + Zoom.zoom * measures[0] * coordinates[0][node1];
         	coordinates1[1] = initY + Zoom.zoom * measures[1] * coordinates[1][node1];
         	coordinates2[0] = initX + Zoom.zoom * measures[0] * coordinates[0][node2];

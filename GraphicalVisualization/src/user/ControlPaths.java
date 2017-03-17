@@ -16,7 +16,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
 import model.Executer;
-import model.Node;
 import model.Path;
 import output.Graph;
 
@@ -143,7 +142,7 @@ public class ControlPaths {
 
 		return colorsliders;
 	}
-	
+
 	public static Slider[] createColorSliders(int[] nodeno)
 	{
 		double[] color = new double[3];
@@ -153,7 +152,7 @@ public class ControlPaths {
 		color[1] = color[1]/255;
 		color[2] = Executer.circleColors[nodeno[0]][nodeno[1]][nodeno[2]][2];
 		color[2] = color[2]/255;
-		
+
 		Slider[] colorsliders = new Slider[3];
 
 		for(int i=0;i<3;i++)
@@ -218,8 +217,8 @@ public class ControlPaths {
 	private static String[] getRoutes()
 	{
 		ArrayList<Path> paths = Executer.paths;
-		ArrayList<Node[]> nodes;
-		Node[] Nodes = new Node[2];
+		ArrayList<int[]> nodes;
+		int[] Nodes = new int[2];
 		int noOfPaths = paths.size();
 		int noOfEdges;
 		String[] routes = new String[noOfPaths];
@@ -234,7 +233,7 @@ public class ControlPaths {
 			for(int j=0;j<noOfEdges;j++)
 			{
 				Nodes = nodes.get(j);
-				route = route + Nodes[0].getNumber() + "-" + Nodes[1].getNumber() + " ";
+				route = route + Nodes[0] + "-" + Nodes[1] + " ";
 			}
 
 			routes[i] = route;
@@ -352,7 +351,7 @@ public class ControlPaths {
 
 		return changeListener;
 	}
-	
+
 	private static ChangeListener<Number> getColorsliderListener(int colorindex,int[] nodeno)
 	{
 		ChangeListener<Number> changeListener = new ChangeListener<Number>()
@@ -375,6 +374,7 @@ public class ControlPaths {
 		{
 			public void handle(ActionEvent act)
 			{
+				Executer.circleColors = Graph.createRedColors();
 				Graph.drawAll();
 			}
 		};
@@ -395,7 +395,7 @@ public class ControlPaths {
 
 		return reset;
 	}
-	
+
 	private static StringConverter<Double> getColorSliderLabels(String string) {
 		StringConverter<Double> output = new StringConverter<Double>() {
             public String toString(Double n) {
@@ -413,7 +413,7 @@ public class ControlPaths {
 				return null;
 			}
 		};
-		
+
 		return output;
 	}
 }

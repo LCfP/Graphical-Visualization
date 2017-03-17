@@ -1,6 +1,7 @@
 package model;
 import input.Input;
 import output.Coordinates;
+import output.Export;
 import output.Graph;
 import user.ControlPaths;
 import user.Sort;
@@ -13,6 +14,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.layout.BorderPane;
@@ -132,9 +134,15 @@ public class Executer extends Application
 		ControlPaths.updateRightPane();
 
 		MenuBar menuBar = new MenuBar();
+		Menu fileMenu = new Menu("File");
 	    Menu displayMenu = new Menu("Display");
+	    menuBar.getMenus().add(fileMenu);
 	    menuBar.getMenus().add(displayMenu);
 
+		MenuItem export = new MenuItem("Export");
+		fileMenu.getItems().add(export);
+		export.setOnAction(Export.getExportListener());
+	    
 	    Menu colorMenu = ControlPaths.makeColorMenu();
 		sortMenu = Sort.makeSortMenu();
 	    displayMenu.getItems().addAll(colorMenu,sortMenu);
