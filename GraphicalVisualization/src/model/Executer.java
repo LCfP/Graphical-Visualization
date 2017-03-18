@@ -90,7 +90,7 @@ public class Executer extends Application
 		//Create unique colors for each path
 		pathColors = Graph.createColors();
 
-		circleColors = Graph.createRedColors();
+		circleColors = Graph.createRedColors(1,1);
 
 		//Creating a window object
 		launch(args);

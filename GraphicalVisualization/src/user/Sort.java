@@ -51,8 +51,10 @@ public class Sort {
 			public void handle(ActionEvent a)
 			{
 				Executer.sortingAttribute = "";
-				Graph.updateCircleColors();
+				
 				ControlPaths.updateRightPane();
+				Executer.nodeMode.setSelected(false);
+				Graph.updateCircleColors();
 				Graph.drawAll();
 			}
 		};
@@ -68,8 +70,10 @@ public class Sort {
 			{
 					MenuItem menuItem = (MenuItem) (a.getSource());
 					Executer.sortingAttribute = menuItem.getText();
-					Graph.updateCircleColors();
+					
 					ControlPaths.updateRightPane();
+					Executer.nodeMode.setSelected(false);
+					Graph.updateCircleColors();
 					Graph.drawAll();
 			}
 		};

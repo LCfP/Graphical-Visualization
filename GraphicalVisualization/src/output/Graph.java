@@ -78,50 +78,57 @@ public class Graph
 
         drawPane.getChildren().clear();
 
-		if(sortingAttribute.equals(""))
-		{
-			attributes = null;
-			attributeNo = -1;
-			noOfAttributes = 1;
+        if(Executer.nodeMode.isSelected())
+        {
+        	Mode.drawPaths();
+        }
+        else
+        {
+    		if(sortingAttribute.equals(""))
+    		{
+    			attributes = null;
+    			attributeNo = -1;
+    			noOfAttributes = 1;
 
-			noOfScreensX = 1;
-			noOfScreensY = 1;
+    			noOfScreensX = 1;
+    			noOfScreensY = 1;
 
-			Graph.updateOtherSizes();
+    			Graph.updateOtherSizes();
 
-			labels = new Label[1];
-			labels[0] = new Label(" All paths");
-			labels[0].setFont(new Font(graphLabelSize));
-			labels[0].setLayoutX(0);
-			labels[0].setLayoutY(0);
-			drawPane.getChildren().add(labels[0]);
-		}
-		else
-		{
-			attributes = Sort.getDistinctAttributes(sortingAttribute);
-			attributeNo = Executer.pathAttributeNames.indexOf(sortingAttribute);
-			noOfAttributes = attributes.size();
-			labels = new Label[noOfAttributes];
+    			labels = new Label[1];
+    			labels[0] = new Label(" All paths");
+    			labels[0].setFont(new Font(graphLabelSize));
+    			labels[0].setLayoutX(0);
+    			labels[0].setLayoutY(0);
+    			drawPane.getChildren().add(labels[0]);
+    		}
+    		else
+    		{
+    			attributes = Sort.getDistinctAttributes(sortingAttribute);
+    			attributeNo = Executer.pathAttributeNames.indexOf(sortingAttribute);
+    			noOfAttributes = attributes.size();
+    			labels = new Label[noOfAttributes];
 
-			noOfScreensX = (int) (Math.sqrt(noOfAttributes - 1)+1);
-			noOfScreensY = (int) ((noOfAttributes - 1) / noOfScreensX + 1);
+    			noOfScreensX = (int) (Math.sqrt(noOfAttributes - 1)+1);
+    			noOfScreensY = (int) ((noOfAttributes - 1) / noOfScreensX + 1);
 
-			Graph.updateOtherSizes();
+    			Graph.updateOtherSizes();
 
-			screenmeasures = getScreenMeasures();
+    			screenmeasures = getScreenMeasures();
 
-			for(int i=0;i<noOfAttributes;i++)
-			{
-				labels[i] = new Label(" " + sortingAttribute + " = " + attributes.get(i));
-				labels[i].setFont(new Font(graphLabelSize));
-				labels[i].setLayoutX((i%noOfScreensX)*Zoom.zoom*screenmeasures[0]);
-				labels[i].setLayoutY((i/noOfScreensX)*Zoom.zoom*screenmeasures[1]);
-				drawPane.getChildren().add(labels[i]);
-			}
-		}
+    			for(int i=0;i<noOfAttributes;i++)
+    			{
+    				labels[i] = new Label(" " + sortingAttribute + " = " + attributes.get(i));
+    				labels[i].setFont(new Font(graphLabelSize));
+    				labels[i].setLayoutX((i%noOfScreensX)*Zoom.zoom*screenmeasures[0]);
+    				labels[i].setLayoutY((i/noOfScreensX)*Zoom.zoom*screenmeasures[1]);
+    				drawPane.getChildren().add(labels[i]);
+    			}
+    		}
 
-		drawNodes(noOfAttributes);
-		makePaths(noOfAttributes,attributeNo,attributes);
+    		drawNodes(noOfAttributes);
+    		makePaths(noOfAttributes,attributeNo,attributes);
+        }
 	}
 
 	//Draws all nodes as red circles
@@ -239,7 +246,7 @@ public class Graph
 		return colors;
 	}
 
-	public static int[][][][] createRedColors()
+	public static int[][][][] createRedColors(int noOfScreensX,int noOfScreensY)
 	{
 		int noOfNodes = Executer.nodes.size();
 		int[][][][] colors = new int[noOfNodes][noOfScreensX][noOfScreensY][3];
@@ -256,7 +263,6 @@ public class Graph
 				}
 			}
 		}
-
 		return colors;
 	}
 
@@ -270,7 +276,7 @@ public class Graph
 
 		if(Executer.sortingAttribute.equals(""))
 		{
-			newColors = createRedColors();
+			newColors = createRedColors(noOfScreensX,noOfScreensY);
 		}
 		else
 		{

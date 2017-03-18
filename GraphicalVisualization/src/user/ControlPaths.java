@@ -11,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Slider;
-import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.util.StringConverter;
@@ -279,9 +278,21 @@ public class ControlPaths {
 				else
 				{
 					if(Executer.nodeMode.isSelected())
-						Mode.drawPath(newvalue,checkboxcount);
+					{
+						if(newvalue)
+							checkboxes[1].setSelected(false);
+						else
+							checkboxes[0].setSelected(false);
+						Mode.drawPaths();
+					}
 					else
-						drawPath(newvalue,checkboxcount);
+					{
+						if(newvalue)
+							checkboxes[1].setSelected(false);
+						else
+							checkboxes[0].setSelected(false);
+						drawPath();
+					}
 				}
 			}
 		};
@@ -289,48 +300,10 @@ public class ControlPaths {
 		return changeListener;
 	}
 
-	private static void drawPath(boolean newvalue,int checkboxcount)
+	private static void drawPath()
 	{
-		Pane drawPane = Executer.drawPane;
-		int noOfLines;
-		int noOfArcs;
-
-		if(newvalue)
-		{
-			noOfLines = Executer.edgelines[checkboxcount-2].length;
-			checkboxes[1].setSelected(false);
-
-			for(int i=0;i<noOfLines;i++)
-			{
-				drawPane.getChildren().addAll(Executer.edgelines[checkboxcount-2][i],Executer.linearrowpolygons[checkboxcount-2][i]);
-			}
-
-			noOfArcs = Executer.edgearcs[checkboxcount-2].length;
-
-			for(int i=0;i<noOfArcs;i++)
-			{
-				drawPane.getChildren().addAll(Executer.edgearcs[checkboxcount-2][i],Executer.arrowpolygons[checkboxcount-2][i]);
-			}
-		}
-		else
-		{
-			noOfLines = Executer.edgelines[checkboxcount-2].length;
-			checkboxes[0].setSelected(false);
-
-			for(int i=0;i<noOfLines;i++)
-			{
-				drawPane.getChildren().remove(Executer.edgelines[checkboxcount-2][i]);
-				drawPane.getChildren().remove(Executer.linearrowpolygons[checkboxcount-2][i]);
-			}
-
-			noOfArcs = Executer.edgearcs[checkboxcount-2].length;
-
-			for(int i=0;i<noOfArcs;i++)
-			{
-				drawPane.getChildren().remove(Executer.edgearcs[checkboxcount-2][i]);
-				drawPane.getChildren().remove(Executer.arrowpolygons[checkboxcount-2][i]);
-			}
-		}
+		Graph.updateCircleColors();
+		Graph.drawAll();
 	}
 
 	private static ChangeListener<Number> getColorsliderListener(int colorindex,int pathno)
@@ -383,7 +356,7 @@ public class ControlPaths {
 		{
 			public void handle(ActionEvent act)
 			{
-				Executer.circleColors = Graph.createRedColors();
+				Executer.circleColors = Graph.createRedColors(Graph.noOfScreensX,Graph.noOfScreensY);
 				Graph.drawAll();
 			}
 		};
